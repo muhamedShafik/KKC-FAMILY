@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@theme {
+  /* KKC Family Brand Palette */
+  --color-amber-50: #fdf8f0;
+  --color-amber-100: #faefd8;
+  --color-amber-200: #f5dba5;
+  --color-amber-300: #eec26e;
+  --color-amber-400: #e5a53d;
+  --color-amber-500: #c8871f;
+  --color-amber-600: #a66c17;
+  --color-amber-700: #855511;
+  --color-amber-800: #6b420d;
+  --color-amber-900: #57360b;
+
+  --color-stone-50: #fafaf9;
+  --color-stone-100: #f5f5f4;
+  --color-stone-200: #e7e5e4;
+  --color-stone-300: #d6d3d1;
+  --color-stone-400: #a8a29e;
+  --color-stone-500: #78716c;
+  --color-stone-600: #57534e;
+  --color-stone-700: #44403c;
+  --color-stone-800: #292524;
+  --color-stone-900: #1c1917;
+
+  /* Semantic tokens */
+  --color-brand:       #c8871f;
+  --color-brand-dark:  #a66c17;
+  --color-brand-light: #faefd8;
+  --color-surface:     #fdf8f0;
+  --color-ink:         #292524;
+  --color-ink-muted:   #78716c;
+
+  /* Typography */
+  --font-serif:  'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Radius */
+  --radius-xl:  1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: var(--color-amber-50); }
+::-webkit-scrollbar-thumb    { background: var(--color-amber-300); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-amber-500); }
+
+/* ── Heritage ornament helper ──────────────────────────────── */
+.ornament::before,
+.ornament::after {
+  content: '✦';
+  display: inline-block;
+  margin: 0 0.5rem;
+  color: var(--color-brand);
+  font-size: 0.6em;
+  vertical-align: middle;
+}
+
+/* ── Tree connector lines ──────────────────────────────────── */
+.tree-connector {
+  stroke: var(--color-amber-300);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* ── Focus ring ────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Card glass effect ─────────────────────────────────────── */
+.glass-card {
+  background: rgba(253, 248, 240, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(200, 135, 31, 0.15);
+}
+
+/* ── Prose overrides ───────────────────────────────────────── */
+.prose h2, .prose h3 {
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+}
+
+/* ── Animation utilities ───────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease both; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f5dba5 25%, #faefd8 50%, #f5dba5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
