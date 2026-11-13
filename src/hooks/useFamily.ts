@@ -1,34 +1,79 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  fetchPublishedMembers, fetchAllMembers, fetchMemberById,
-  fetchMemberWithRelations, upsertMember, archiveMember, deleteMember,
+  fetchFounders, fetchPublishedMembers, fetchAllMembers, fetchMemberById,
+  fetchMemberWithRelations, getCachedMemberWithRelations,
+  upsertMember, archiveMember, deleteMember,
   updateMemberStatus, buildFamilyTree, fetchGallery,
   fetchHistory, upsertHistoryEntry, upsertGalleryItem,
   deleteGalleryItem, deleteHistoryEntry,
   exportFamilyData, setupFounders,
   type FoundersSetupPayload,
 } from '@/lib/queries';
-import type { FamilyMember } from '@/types';
+import type { FamilyMember, FamilyMemberWithRelations, TreeNode } from '@/types';
 
 // ── Public Members ─────────────────────────────────────────────
 export function usePublishedMembers() {
-  return useQuery({
+  return useQuery<FamilyMember[]>({
     queryKey: ['members', 'published'],
     queryFn: fetchPublishedMembers,
+    initialData: () => {
+      try {
+        const raw = localStorage.getItem('kkc_published_members_cache_v2');
+        if (raw) return JSON.parse(raw) as FamilyMember[];
+      } catch {}
+      return undefined;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
+  });
+}
+
+// ── Instant Founders Query (Lightweight Generation 1) ───────────
+export function useFounders() {
+  return useQuery<FamilyMember[]>({
+    queryKey: ['founders'],
+    queryFn: fetchFounders,
+    initialData: () => {
+      try {
+        const raw = localStorage.getItem('kkc_founders_cache_v2');
+        if (raw) {
+          const parsed = JSON.parse(raw) as FamilyMember[];
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+        // Fallback: check published members cache
+        const pubRaw = localStorage.getItem('kkc_published_members_cache_v2');
+        if (pubRaw) {
+          const pub = JSON.parse(pubRaw) as FamilyMember[];
+          const gen1 = pub.filter(m => (m.generation ?? 1) === 1);
+          if (gen1.length > 0) return gen1;
+        }
+        // Fallback: check storage members
+        const memRaw = localStorage.getItem('kkc_members_v1');
+        if (memRaw) {
+          const mem = JSON.parse(memRaw) as FamilyMember[];
+          const gen1 = mem.filter(m => (m.generation ?? 1) === 1);
+          if (gen1.length > 0) return gen1;
+        }
+      } catch {}
+      return undefined;
+    },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
   });
 }
 
 // ── All Members (admin) ────────────────────────────────────────
 export function useAllMembers() {
-  return useQuery({
+  return useQuery<FamilyMember[]>({
     queryKey: ['members', 'all'],
     queryFn: fetchAllMembers,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
 // ── Single Member ──────────────────────────────────────────────
 export function useMember(id: string | undefined) {
-  return useQuery({
+  return useQuery<FamilyMember | null>({
     queryKey: ['member', id],
     queryFn: () => fetchMemberById(id!),
     enabled: !!id,
@@ -36,11 +81,48 @@ export function useMember(id: string | undefined) {
 }
 
 export function useMemberWithRelations(id: string | undefined) {
-  return useQuery({
+  const qc = useQueryClient();
+  return useQuery<FamilyMemberWithRelations | null>({
     queryKey: ['member', id, 'relations'],
     queryFn: () => fetchMemberWithRelations(id!),
     enabled: !!id,
+    placeholderData: () => {
+      if (!id) return undefined;
+      // 1. Instant 0ms synchronous cache lookup (with relations populated)
+      const cached = getCachedMemberWithRelations(id);
+      if (cached) return cached;
+
+      // 2. Fast lookup in query client cache
+      const membersPool = qc.getQueryData<FamilyMember[]>(['members', 'published']) ||
+                          qc.getQueryData<FamilyMember[]>(['members', 'all']);
+      const found = membersPool?.find(m => m.id === id);
+      if (found) {
+        return {
+          ...found,
+          parents: [],
+          children: [],
+          spouses: [],
+          siblings: [],
+        };
+      }
+      return undefined;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
   });
+}
+
+// ── Instant Prefetch Hook (hover or focus) ──────────────────────
+export function usePrefetchMember() {
+  const qc = useQueryClient();
+  return (id: string) => {
+    if (!id) return;
+    qc.prefetchQuery({
+      queryKey: ['member', id, 'relations'],
+      queryFn: () => fetchMemberWithRelations(id),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 }
 
 // ── Upsert Member ──────────────────────────────────────────────
@@ -93,11 +175,22 @@ export function useUpdateMemberStatus() {
 }
 
 // ── Family Tree ────────────────────────────────────────────────
-export function useFamilyTree() {
-  return useQuery({
-    queryKey: ['family-tree'],
-    queryFn: buildFamilyTree,
-    staleTime: 1000 * 60 * 2,
+export function useFamilyTree(preferredRootId?: string) {
+  return useQuery<TreeNode | null>({
+    queryKey: ['family-tree', preferredRootId || 'default'],
+    queryFn: () => buildFamilyTree(preferredRootId),
+    initialData: () => {
+      if (!preferredRootId) {
+        try {
+          const cached = localStorage.getItem('kkc_cached_family_tree_v2');
+          if (cached) return JSON.parse(cached) as TreeNode;
+        } catch {}
+      }
+      return undefined;
+    },
+    initialDataUpdatedAt: 0,
+    staleTime: 1000 * 15,
+    gcTime: 1000 * 60 * 60,
   });
 }
 

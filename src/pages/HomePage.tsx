@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { TreePine, Users, BookOpen, Image, ChevronRight, Sprout, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { usePublishedMembers } from '@/hooks/useFamily';
+import { usePublishedMembers, useFounders, usePrefetchMember } from '@/hooks/useFamily';
+import { getCachedFamilyStats } from '@/lib/queries';
 import { Button, Avatar, Skeleton } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 
@@ -22,13 +23,23 @@ const fadeUp = {
 };
 
 export default function HomePage() {
-  const { data: members = [], isLoading } = usePublishedMembers();
-  const founders = members.filter(m => m.generation === 1);
+  const { data: members = [], isLoading: isMembersLoading } = usePublishedMembers();
+  const { data: foundersData = [], isLoading: isFoundersLoading } = useFounders();
+  const prefetchMember = usePrefetchMember();
+
+  const founders = foundersData.length > 0 ? foundersData : members.filter(m => (m.generation ?? 1) === 1);
   const founderHead = founders[0];
   const founderPartner = founders[1];
   const recentMembers = members.slice(0, 6);
-  const totalGenerations = members.length > 0 ? Math.max(...members.map(m => m.generation ?? 1)) : 0;
-  const totalBranches = new Set(members.map(m => m.branch).filter(Boolean)).size;
+
+  const cachedStats = getCachedFamilyStats();
+  const totalMembers = members.length > 0 ? members.length : (cachedStats?.totalMembers ?? (founders.length > 0 ? founders.length : 0));
+  const totalGenerations = members.length > 0
+    ? Math.max(...members.map(m => m.generation ?? 1))
+    : (cachedStats?.totalGenerations ?? (founders.length > 0 ? 1 : 0));
+  const totalBranches = members.length > 0
+    ? (new Set(members.map(m => m.branch).filter(Boolean)).size || 1)
+    : (cachedStats?.totalBranches ?? (founders.length > 0 ? 1 : 0));
 
   return (
     <div>
@@ -128,7 +139,7 @@ export default function HomePage() {
 
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{members.length}</p>
+                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers}</p>
                       <p className="text-xs text-stone-400 mt-0.5">Members</p>
                     </div>
                     <div>
@@ -144,6 +155,41 @@ export default function HomePage() {
                   <Link to="/tree" className="mt-6 flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-sm font-medium transition-colors border border-amber-500/30">
                     View Family Tree <ChevronRight className="w-4 h-4" />
                   </Link>
+                </>
+              ) : isFoundersLoading ? (
+                <>
+                  <p className="text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
+                    Family Founders
+                  </p>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex -space-x-3">
+                      <div className="w-16 h-16 rounded-full bg-white/20 animate-pulse border-2 border-amber-400/50" />
+                      <div className="w-16 h-16 rounded-full bg-white/10 animate-pulse border-2 border-amber-300/30" />
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <div className="h-5 w-44 bg-white/20 rounded animate-pulse" />
+                      <div className="h-3.5 w-32 bg-amber-400/30 rounded animate-pulse" />
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/20 mb-4" />
+
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers || '—'}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">Members</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalGenerations || '—'}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">Generations</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalBranches || '—'}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">Branches</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 h-11 rounded-xl bg-white/10 animate-pulse" />
                 </>
               ) : (
                 <>
@@ -285,7 +331,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Recent Members ────────────────────────────────────────── */}
-      {(isLoading || recentMembers.length > 0) && (
+      {(isMembersLoading || recentMembers.length > 0) && (
         <section className="bg-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-10">
@@ -299,7 +345,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {isLoading
+              {isMembersLoading && recentMembers.length === 0
                 ? Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col items-center p-4 rounded-2xl bg-stone-50">
                       <Skeleton className="w-16 h-16 rounded-full mb-3" />
@@ -314,6 +360,7 @@ export default function HomePage() {
                     >
                       <Link
                         to={`/members/${m.id}`}
+                        onMouseEnter={() => prefetchMember(m.id)}
                         className="flex flex-col items-center p-4 rounded-2xl hover:bg-amber-50 border border-transparent hover:border-amber-100 transition-all text-center group"
                       >
                         <Avatar name={m.full_name} src={m.profile_photo_url} size="lg" className="mb-3 group-hover:ring-2 ring-amber-400 ring-offset-2 transition-all" />

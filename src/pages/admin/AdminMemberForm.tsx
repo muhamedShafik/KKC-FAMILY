@@ -262,10 +262,10 @@ export default function AdminMemberForm() {
     }
     try {
       await addRelationship(savedId, relatedId, type);
+      queryClient.removeQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['member', savedId] });
-      queryClient.invalidateQueries({ queryKey: ['member', relatedId] });
+      queryClient.invalidateQueries({ queryKey: ['member'] });
 
       // Refresh relations directly from DB
       const updated = await fetchMemberWithRelations(savedId);
@@ -294,10 +294,10 @@ export default function AdminMemberForm() {
     if (!savedId) return;
     try {
       await removeRelationship(savedId, relatedId);
+      queryClient.removeQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['member', savedId] });
-      queryClient.invalidateQueries({ queryKey: ['member', relatedId] });
+      queryClient.invalidateQueries({ queryKey: ['member'] });
 
       const updated = await fetchMemberWithRelations(savedId);
       if (updated) {

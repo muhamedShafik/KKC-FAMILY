@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Users } from 'lucide-react';
-import { usePublishedMembers } from '@/hooks/useFamily';
+import { usePublishedMembers, usePrefetchMember } from '@/hooks/useFamily';
 import { Avatar, Badge, EmptyState, SectionHeader, Skeleton, Input, Select } from '@/components/ui';
 import { calcAge, formatDate, generationLabel } from '@/lib/utils';
 import type { FamilyMember } from '@/types';
 import { motion } from 'framer-motion';
 
-function MemberCard({ member }: { member: FamilyMember }) {
+function MemberCard({ member, onHover }: { member: FamilyMember; onHover?: (id: string) => void }) {
   const age = calcAge(member.dob, member.dod);
   const isDeceased = !!member.dod;
   return (
@@ -18,6 +18,7 @@ function MemberCard({ member }: { member: FamilyMember }) {
     >
       <Link
         to={`/members/${member.id}`}
+        onMouseEnter={() => onHover?.(member.id)}
         className="group flex items-start gap-4 p-4 bg-white rounded-2xl border border-stone-100 hover:border-amber-200 hover:shadow-md transition-all duration-200"
       >
         <Avatar
@@ -53,6 +54,7 @@ function MemberCard({ member }: { member: FamilyMember }) {
 
 export default function MembersPage() {
   const { data: members = [], isLoading } = usePublishedMembers();
+  const prefetchMember = usePrefetchMember();
   const [search, setSearch] = useState('');
   const [genFilter, setGenFilter] = useState('');
   const [branchFilter, setBranchFilter] = useState('');
@@ -154,7 +156,7 @@ export default function MembersPage() {
         />
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
-          {filtered.map(m => <MemberCard key={m.id} member={m} />)}
+          {filtered.map(m => <MemberCard key={m.id} member={m} onHover={prefetchMember} />)}
         </div>
       )}
     </div>

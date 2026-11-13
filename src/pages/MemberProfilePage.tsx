@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Briefcase, Calendar, Heart, Users, Star, Book, Lock, Edit, Phone, Mail, FileText } from 'lucide-react';
-import { useMemberWithRelations } from '@/hooks/useFamily';
+import { useMemberWithRelations, usePrefetchMember } from '@/hooks/useFamily';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, Badge, Button, Skeleton } from '@/components/ui';
 import { calcAge, formatDate, generationLabel } from '@/lib/utils';
@@ -20,10 +20,19 @@ function InfoBlock({ icon: Icon, label, value }: { icon: React.ElementType; labe
   );
 }
 
-function RelationRow({ member, rel }: { member: { id: string; full_name: string; profile_photo_url: string | null }; rel: string }) {
+function RelationRow({
+  member,
+  rel,
+  onHover,
+}: {
+  member: { id: string; full_name: string; profile_photo_url: string | null };
+  rel: string;
+  onHover?: (id: string) => void;
+}) {
   return (
     <Link
       to={`/members/${member.id}`}
+      onMouseEnter={() => onHover?.(member.id)}
       className="flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 transition-colors border border-transparent hover:border-amber-100"
     >
       <Avatar name={member.full_name} src={member.profile_photo_url} size="sm" />
@@ -37,10 +46,11 @@ function RelationRow({ member, rel }: { member: { id: string; full_name: string;
 
 export default function MemberProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const { data: member, isLoading } = useMemberWithRelations(id);
+  const { data: member, isLoading, isFetching } = useMemberWithRelations(id);
+  const prefetchMember = usePrefetchMember();
   const { isAdmin } = useAuth();
 
-  if (isLoading) {
+  if (isLoading && !member) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
         <Skeleton className="h-64 rounded-2xl" />
@@ -175,7 +185,7 @@ export default function MemberProfilePage() {
                   {member.spouses.length > 1 ? 'Spouses' : 'Spouse'}
                 </h3>
               </div>
-              {member.spouses.map(s => <RelationRow key={s.id} member={s} rel="Spouse" />)}
+              {member.spouses.map(s => <RelationRow key={s.id} member={s} rel="Spouse" onHover={prefetchMember} />)}
             </div>
           )}
 
@@ -185,7 +195,7 @@ export default function MemberProfilePage() {
                 <Users className="w-4 h-4 text-amber-600" />
                 <h3 className="font-serif font-semibold text-stone-900 text-sm">Parents</h3>
               </div>
-              {member.parents.map(p => <RelationRow key={p.id} member={p} rel="Parent" />)}
+              {member.parents.map(p => <RelationRow key={p.id} member={p} rel="Parent" onHover={prefetchMember} />)}
             </div>
           )}
 
@@ -197,7 +207,7 @@ export default function MemberProfilePage() {
                   Children ({member.children.length})
                 </h3>
               </div>
-              {member.children.map(c => <RelationRow key={c.id} member={c} rel="Child" />)}
+              {member.children.map(c => <RelationRow key={c.id} member={c} rel="Child" onHover={prefetchMember} />)}
             </div>
           )}
 
@@ -209,8 +219,25 @@ export default function MemberProfilePage() {
                   Siblings ({member.siblings.length})
                 </h3>
               </div>
-              {member.siblings.map(s => <RelationRow key={s.id} member={s} rel="Sibling" />)}
+              {member.siblings.map(s => <RelationRow key={s.id} member={s} rel="Sibling" onHover={prefetchMember} />)}
             </div>
+          )}
+
+          {/* Fallback state when relations are empty */}
+          {member.spouses.length === 0 && member.parents.length === 0 && member.children.length === 0 && member.siblings.length === 0 && (
+            isFetching ? (
+              <div className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm space-y-3">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm text-center py-6">
+                <Users className="w-6 h-6 text-stone-300 mx-auto mb-2" />
+                <p className="text-xs text-stone-500 font-medium">No family connections recorded yet</p>
+                <p className="text-[11px] text-stone-400 mt-1">Relations can be linked via the Family Tree or Admin.</p>
+              </div>
+            )
           )}
         </div>
       </div>
