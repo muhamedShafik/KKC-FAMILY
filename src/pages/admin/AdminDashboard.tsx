@@ -33,6 +33,9 @@ export default function AdminDashboard() {
 
   const published = members.filter(m => m.status === 'published').length;
   const drafts = members.filter(m => m.status === 'draft').length;
+  const pendingPhotos = gallery.filter(g => !g.is_published).length;
+  const pendingHistory = history.filter(h => !h.is_published).length;
+  const totalPending = drafts + pendingPhotos + pendingHistory;
 
   const handleExport = async () => {
     await exportData.mutateAsync();
@@ -97,19 +100,30 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Draft members requiring review */}
-      {drafts > 0 && (
-        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <RefreshCw className="w-4 h-4 text-stone-500" />
-              <h3 className="font-serif font-semibold text-stone-900">Pending Review ({drafts})</h3>
+      {/* Pending Submissions Requiring Review */}
+      {totalPending > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <RefreshCw className="w-4 h-4 text-amber-600 animate-spin" />
+              <h3 className="font-serif font-bold text-stone-900 text-lg">
+                Pending Contributions ({totalPending})
+              </h3>
             </div>
-            <Link to="/admin/members?status=draft" className="text-sm text-amber-600 hover:underline">View all</Link>
+            <p className="text-stone-600 text-sm">
+              {drafts > 0 && `${drafts} member${drafts > 1 ? 's' : ''}`}
+              {drafts > 0 && (pendingPhotos > 0 || pendingHistory > 0) && ', '}
+              {pendingPhotos > 0 && `${pendingPhotos} photo${pendingPhotos > 1 ? 's' : ''}`}
+              {pendingPhotos > 0 && pendingHistory > 0 && ', '}
+              {pendingHistory > 0 && `${pendingHistory} story${pendingHistory > 1 ? 'ies' : ''}`}
+              {' '}awaiting your review before being published.
+            </p>
           </div>
-          <p className="text-stone-500 text-sm">
-            {drafts} member{drafts > 1 ? 's are' : ' is'} awaiting review before being published to the public site.
-          </p>
+          <Link to="/admin/review" className="flex-shrink-0">
+            <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+              Review Submissions →
+            </Button>
+          </Link>
         </div>
       )}
 

@@ -107,3 +107,12 @@ export interface AdminUser {
   role: 'admin' | 'editor';
 }
 
+export interface InviteToken {
+  id: string;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  created_by: string | null;
+  is_active: boolean;
+}
+

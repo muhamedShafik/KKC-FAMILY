@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Settings, Shield, Database, Download } from 'lucide-react';
+import { Settings, Shield, Database, Download, QrCode } from 'lucide-react';
 import { Button, Input, Card } from '@/components/ui';
 import { useExport } from '@/hooks/useFamily';
 import { useAuth } from '@/contexts/AuthContext';
@@ -81,6 +81,21 @@ export default function AdminSettingsPage() {
         </Card>
 
 
+
+        {/* Invite Links */}
+        <Card>
+          <div className="flex items-center gap-3 mb-5">
+            <QrCode className="w-5 h-5 text-amber-600" />
+            <h2 className="font-serif font-semibold text-stone-900">Public Invite Links</h2>
+          </div>
+          <p className="text-sm text-stone-500 mb-4">
+            Generate a secure 7-hour link and QR code to let family members add content without an admin password.
+          </p>
+          <Button onClick={() => navigate('/admin/invite-links')}>
+            <QrCode className="w-4 h-4" />
+            Manage Invite Links
+          </Button>
+        </Card>
 
         {/* Supabase Info */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">

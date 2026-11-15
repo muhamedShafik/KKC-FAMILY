@@ -18,6 +18,9 @@ import AdminGalleryPage from '@/pages/admin/AdminGalleryPage';
 import AdminHistoryPage from '@/pages/admin/AdminHistoryPage';
 import AdminSettingsPage from '@/pages/admin/AdminSettingsPage';
 import AdminFoundersSetup from '@/pages/admin/AdminFoundersSetup';
+import PublicContributePage from '@/pages/PublicContributePage';
+import InviteGeneratorPage from '@/pages/admin/InviteGeneratorPage';
+import AdminReviewPage from '@/pages/admin/AdminReviewPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +47,9 @@ function App() {
               <Route path="gallery" element={<GalleryPage />} />
             </Route>
 
+            {/* Public Contributor Portal – token-protected */}
+            <Route path="contribute" element={<PublicContributePage />} />
+
             {/* Admin auth */}
             <Route path="admin/login" element={<AdminLoginPage />} />
 
@@ -56,6 +62,8 @@ function App() {
               <Route path="members/:id/edit" element={<AdminMemberForm />} />
               <Route path="gallery" element={<AdminGalleryPage />} />
               <Route path="history" element={<AdminHistoryPage />} />
+              <Route path="review" element={<AdminReviewPage />} />
+              <Route path="invite-links" element={<InviteGeneratorPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
             </Route>
           </Routes>

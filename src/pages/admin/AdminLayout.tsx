@@ -2,23 +2,34 @@ import { Outlet, NavLink, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard, Users, BookOpen, Image, Settings,
-  LogOut, TreePine, ChevronRight, Menu, X,
+  LogOut, TreePine, ChevronRight, Menu, X, Link2, Inbox,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAllMembers, useGallery, useHistory } from '@/hooks/useFamily';
 import toast from 'react-hot-toast';
 
 const ADMIN_NAV = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard, end: true },
+  { label: 'Review Requests', to: '/admin/review', icon: Inbox },
   { label: 'Founders Setup', to: '/admin/setup-founders', icon: TreePine },
   { label: 'Family Members', to: '/admin/members', icon: Users },
   { label: 'Family History', to: '/admin/history', icon: BookOpen },
   { label: 'Gallery', to: '/admin/gallery', icon: Image },
+  { label: 'Invite Links', to: '/admin/invite-links', icon: Link2 },
   { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
 
 function Sidebar({ mobile = false, onClose }: { mobile?: boolean; onClose?: () => void }) {
   const { signOut, user } = useAuth();
+  const { data: members = [] } = useAllMembers();
+  const { data: gallery = [] } = useGallery(true);
+  const { data: history = [] } = useHistory(true);
+
+  const pendingCount =
+    members.filter(m => m.status === 'draft').length +
+    gallery.filter(g => !g.is_published).length +
+    history.filter(h => !h.is_published).length;
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,7 +75,12 @@ function Sidebar({ mobile = false, onClose }: { mobile?: boolean; onClose?: () =
             )}
           >
             <Icon className="w-4 h-4 flex-shrink-0" />
-            {label}
+            <span className="flex-1 truncate">{label}</span>
+            {label === 'Review Requests' && pendingCount > 0 && (
+              <span className="text-xs bg-amber-500 text-stone-900 font-bold px-2 py-0.5 rounded-full">
+                {pendingCount}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
