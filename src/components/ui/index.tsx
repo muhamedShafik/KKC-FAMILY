@@ -22,7 +22,7 @@ export function Button({
           'bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200': variant === 'secondary',
           'hover:bg-stone-100 text-stone-700': variant === 'ghost',
           'bg-red-500 hover:bg-red-600 text-white': variant === 'danger',
-          'border border-stone-300 text-stone-700 bg-white hover:bg-white hover:text-stone-700 hover:border-stone-300': variant === 'outline',
+          'border border-stone-300 hover:border-amber-400 text-stone-700 hover:text-amber-800 bg-white': variant === 'outline',
           'px-3 py-1.5 text-sm': size === 'sm',
           'px-4 py-2 text-sm': size === 'md',
           'px-6 py-3 text-base': size === 'lg',

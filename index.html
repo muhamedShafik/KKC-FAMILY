@@ -7,11 +7,19 @@
     <meta name="description" content="KKC Family — Our Roots, Our Story. Explore the KKC family tree, history, and photo gallery." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>KKC Family</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1c1917; color: #f5f5f4; font-family: sans-serif;">
+        <div style="width: 40px; height: 40px; border: 3px solid rgba(217, 119, 6, 0.2); border-top-color: #d97706; border-radius: 50%; animation: kkc-spin 0.8s linear infinite;"></div>
+        <p style="margin-top: 16px; font-size: 14px; color: #a8a29e; letter-spacing: 0.05em;">Loading KKC Family...</p>
+      </div>
+      <style>
+        @keyframes kkc-spin { to { transform: rotate(360deg); } }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -90,7 +90,10 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link to="/history">
-                  <Button size="lg" className="bg-white text-stone-900 border border-white hover:bg-white hover:text-stone-900 hover:border-white shadow-sm">
+                  <Button
+                    size="lg"
+                    className="bg-white/10 text-white border border-white/30 hover:bg-white/10 hover:text-white hover:border-white/30 backdrop-blur-sm"
+                  >
                     Our History
                   </Button>
                 </Link>
@@ -429,7 +432,10 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link to="/gallery">
-              <Button size="lg" className="bg-white text-stone-900 border border-white hover:bg-white hover:text-stone-900 hover:border-white shadow-sm">
+              <Button
+                size="lg"
+                className="bg-white/10 text-white border border-white/30 hover:bg-white/10 hover:text-white hover:border-white/30 backdrop-blur-sm"
+              >
                 <Image className="w-5 h-5" /> Photo Gallery
               </Button>
             </Link>
