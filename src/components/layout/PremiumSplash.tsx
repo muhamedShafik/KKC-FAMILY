@@ -25,7 +25,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
     // Auto-dismiss smoothly after 2.6 seconds
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 2600);
+    }, 3600);
 
     return () => clearTimeout(timer);
   }, []);

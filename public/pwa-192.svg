@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2a241e"/>
+      <stop offset="100%" stop-color="#12100e"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <rect x="8" y="8" width="176" height="176" rx="36" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Tree Icon in Gold -->
+  <g transform="translate(64, 40)" fill="url(#gold)">
+    <path d="M32 0L12 28h10l-14 24h18v16h8V52h18L38 28h10z"/>
+  </g>
+  
+  <!-- KKC Text -->
+  <text x="96" y="145" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="28" font-weight="bold" fill="url(#gold)" letter-spacing="4">KKC</text>
+  <text x="96" y="165" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#fcd34d" letter-spacing="3" opacity="0.8">FAMILY</text>
+</svg>
+

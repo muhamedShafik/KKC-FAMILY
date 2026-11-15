@@ -1,0 +1,27 @@
+{
+  "name": "KKC Family — Our Roots, Our Story",
+  "short_name": "KKC Family",
+  "description": "Explore the KKC family tree, history, and photo gallery.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#12100e",
+  "theme_color": "#c8871f",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
