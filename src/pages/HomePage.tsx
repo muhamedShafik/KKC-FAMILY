@@ -90,7 +90,7 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link to="/history">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white hover:border-white/50">
+                  <Button size="lg" className="bg-white text-stone-900 border border-white hover:bg-white hover:text-stone-900 hover:border-white shadow-sm">
                     Our History
                   </Button>
                 </Link>
@@ -281,9 +281,7 @@ export default function HomePage() {
               <p>
                 This website is currently being set up. Family administrators can sign in to add founding members, build out the family tree, and begin adding our rich family history.
               </p>
-              <p className="text-sm bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800">
-                <strong>📝 Getting Started:</strong> Please visit the Admin area to add the first family head and their partner to begin building the family tree.
-              </p>
+             
             </div>
             <div className="mt-8 flex gap-3">
               <Link to="/history">
@@ -431,7 +429,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link to="/gallery">
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white hover:border-white/50">
+              <Button size="lg" className="bg-white text-stone-900 border border-white hover:bg-white hover:text-stone-900 hover:border-white shadow-sm">
                 <Image className="w-5 h-5" /> Photo Gallery
               </Button>
             </Link>
