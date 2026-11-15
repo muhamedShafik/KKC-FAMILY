@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { Settings, Shield, Database, Download } from 'lucide-react';
 import { Button, Input, Card } from '@/components/ui';
 import { useExport } from '@/hooks/useFamily';
@@ -7,6 +9,7 @@ import toast from 'react-hot-toast';
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const exportData = useExport();
   const [familyName, setFamilyName] = useState('KKC');
   const [tagline, setTagline] = useState('Our Roots, Our Story');
@@ -76,6 +79,8 @@ export default function AdminSettingsPage() {
             <Download className="w-4 h-4" /> Export Family Data (JSON)
           </Button>
         </Card>
+
+
 
         {/* Supabase Info */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
