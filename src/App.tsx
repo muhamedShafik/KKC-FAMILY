@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/contexts/AuthContext';
 import PublicLayout from '@/components/layout/PublicLayout';
+import ScrollToTop from '@/components/layout/ScrollToTop';
+import PremiumSplash from '@/components/layout/PremiumSplash';
 import HomePage from '@/pages/HomePage';
 
 // Route-level code splitting for fast initial page loads
@@ -48,7 +50,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PremiumSplash />
         <BrowserRouter>
+          <ScrollToTop />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public routes */}
