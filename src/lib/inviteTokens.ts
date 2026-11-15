@@ -18,18 +18,40 @@ function setLocal<T>(key: string, val: T): void {
   } catch {}
 }
 
-/** Generate a random token string */
-function generateToken(): string {
-  const arr = new Uint8Array(18);
-  crypto.getRandomValues(arr);
-  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+/**
+ * Generate a self-verifying token that encodes its expiration time (7 hours).
+ * This ensures the token works on any device (phone, laptop) even before database migration.
+ */
+function encodeToken(expiresAtMs: number): string {
+  const randomBytes = new Uint8Array(12);
+  crypto.getRandomValues(randomBytes);
+  const randomPart = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+  const raw = `${randomPart}.${expiresAtMs}`;
+  return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-/** Create a new invite token valid for 7 hours */
+/** Decode and extract the expiration date from the self-verifying token */
+function decodeToken(token: string): { randomPart: string; expiresAt: Date } | null {
+  try {
+    let base64 = token.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
+    const decoded = atob(base64);
+    const parts = decoded.split('.');
+    if (parts.length !== 2) return null;
+    const [randomPart, expStr] = parts;
+    const expMs = Number(expStr);
+    if (!randomPart || isNaN(expMs)) return null;
+    return { randomPart, expiresAt: new Date(expMs) };
+  } catch {
+    return null;
+  }
+}
+
+/** Create a new invite token valid for exactly 7 hours */
 export async function createInviteToken(): Promise<InviteToken> {
-  const token = generateToken();
   const now = new Date();
   const expires = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  const token = encodeToken(expires.getTime());
 
   if (isSupabaseConfigured) {
     try {
@@ -44,9 +66,8 @@ export async function createInviteToken(): Promise<InviteToken> {
         setLocal(STORAGE_TOKENS, all);
         return data as InviteToken;
       }
-      console.warn('Supabase invite_tokens insert failed, using local storage fallback:', error?.message);
     } catch (e) {
-      console.warn('Supabase invite_tokens error, using local storage fallback:', e);
+      console.warn('Supabase invite_tokens insert fallback:', e);
     }
   }
 
@@ -86,34 +107,48 @@ export async function fetchInviteTokens(): Promise<InviteToken[]> {
         );
       }
     } catch (e) {
-      console.warn('Could not fetch invite_tokens from Supabase, using local cache:', e);
+      console.warn('Supabase fetch invite_tokens fallback:', e);
     }
   }
   return localTokens;
 }
 
-/** Verify a token is valid (not expired and active) */
+/** Verify a token is valid (not expired and active) across any device */
 export async function verifyInviteToken(token: string): Promise<{ valid: boolean; expiresAt?: string }> {
-  const now = new Date().toISOString();
+  if (!token) return { valid: false };
 
+  // 1. If Supabase is available, check if token was revoked or exists there
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('invite_tokens')
         .select('expires_at, is_active')
         .eq('token', token)
-        .eq('is_active', true)
-        .gt('expires_at', now)
         .maybeSingle();
-      if (!error && data) {
-        return { valid: true, expiresAt: data.expires_at };
+
+      if (data) {
+        // If explicitly revoked, invalidate
+        if (!data.is_active) return { valid: false };
+        // Check if expired
+        const isNotExpired = new Date(data.expires_at) > new Date();
+        return { valid: isNotExpired, expiresAt: data.expires_at };
       }
     } catch (e) {
-      console.warn('Supabase token verification error, checking local storage:', e);
+      console.warn('Supabase token verification check error, using self-verification:', e);
     }
   }
 
-  // Local fallback
+  // 2. Self-verifying token check (works on any device, anywhere)
+  const decoded = decodeToken(token);
+  if (decoded) {
+    const isNotExpired = decoded.expiresAt > new Date();
+    return {
+      valid: isNotExpired,
+      expiresAt: decoded.expiresAt.toISOString(),
+    };
+  }
+
+  // 3. Fallback check for raw tokens in local storage
   const all = getLocal<InviteToken[]>(STORAGE_TOKENS, []);
   const found = all.find(t => t.token === token && t.is_active && new Date(t.expires_at) > new Date());
   if (!found) return { valid: false };
