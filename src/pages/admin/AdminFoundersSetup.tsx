@@ -42,7 +42,7 @@ export default function AdminFoundersSetup() {
   const [partnerBio, setPartnerBio] = useState('');
   const [partnerPhotoUrl, setPartnerPhotoUrl] = useState('/uploads/founders.jpg');
 
-  const [branchName, setBranchName] = useState('KKC Ancestral Lineage');
+  const [branchName, setBranchName] = useState('KKKC Ancestral Lineage');
 
   // Pre-load existing founders if already in database
   useEffect(() => {
@@ -163,7 +163,7 @@ export default function AdminFoundersSetup() {
         partnerBio: partnerBio || null,
         partnerPhotoUrl: partnerPhotoUrl || archivalPhotoUrl || '/uploads/founders.jpg',
 
-        branchName: branchName.trim() || 'KKC Ancestral Heritage',
+        branchName: branchName.trim() || 'KKKC Ancestral Heritage',
       });
 
       toast.success(headId ? 'Family founders updated successfully!' : 'Family founders initialized successfully!');
@@ -195,7 +195,7 @@ export default function AdminFoundersSetup() {
           <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-xl flex-shrink-0 bg-stone-800 group">
             <img
               src={archivalPhotoUrl}
-              alt="KKC Founders"
+              alt="KKKC Founders"
               className="w-full h-full object-cover object-top"
               onError={(e) => {
                 const t = e.target as HTMLImageElement;
@@ -223,7 +223,7 @@ export default function AdminFoundersSetup() {
               Archival Founders Portrait
             </h3>
             <p className="text-stone-300 text-sm leading-relaxed mb-4">
-              Upload or edit the master photograph of the founding generation. This photo represents the roots of the KKC lineage across the Homepage and Family Tree.
+              Upload or edit the master photograph of the founding generation. This photo represents the roots of the KKKC lineage across the Homepage and Family Tree.
             </p>
             <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
               <div
@@ -262,7 +262,7 @@ export default function AdminFoundersSetup() {
           <Input
             value={branchName}
             onChange={e => setBranchName(e.target.value)}
-            placeholder="e.g. KKC Roots Branch, Main Lineage"
+            placeholder="e.g. KKKC Roots Branch, Main Lineage"
             hint="The primary branch label assigned to Generation 1"
           />
         </Card>
@@ -505,4 +505,5 @@ export default function AdminFoundersSetup() {
     </div>
   );
 }
+
 

@@ -69,7 +69,7 @@ export default function HomePage() {
                 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.15]"
               >
                 The{' '}
-                <span className="text-amber-400">KKC</span>
+                <span className="text-amber-400">KKKC</span>
                 <br />Family
               </motion.h1>
 
@@ -77,7 +77,7 @@ export default function HomePage() {
                 variants={fadeUp} initial="hidden" animate="show" custom={2}
                 className="text-stone-300 text-lg md:text-xl max-w-lg mb-8 leading-relaxed"
               >
-                Explore our family roots, discover stories of those who came before us, and celebrate the living legacy of the KKC family across generations.
+                Explore our family roots, discover stories of those who came before us, and celebrate the living legacy of the KKKC family across generations.
               </motion.p>
 
               <motion.div
@@ -114,7 +114,7 @@ export default function HomePage() {
                     <div className="flex -space-x-3">
                       <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 ring-2 ring-stone-800 bg-stone-700">
                         <img
-                          src={founderHead.profile_photo_url || '/uploads/founders.jpg'}
+                          src={founderHead?.profile_photo_url || '/uploads/founders.jpg'}
                           alt={founderHead.full_name}
                           className="w-full h-full object-cover object-top"
                         />
@@ -134,7 +134,7 @@ export default function HomePage() {
                       {founderPartner && (
                         <p className="text-stone-300 text-sm">& {founderPartner.full_name}</p>
                       )}
-                      <p className="text-amber-400 text-xs mt-0.5">Generation 1 · Roots of KKC</p>
+                      <p className="text-amber-400 text-xs mt-0.5">Generation 1 · Roots of KKKC</p>
                     </div>
                   </div>
 
@@ -273,13 +273,13 @@ export default function HomePage() {
         <LeafDivider />
         <div className="grid md:grid-cols-2 gap-12 items-center mt-8">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-amber-600 font-medium text-sm uppercase tracking-widest mb-3">About the KKC Family</p>
+            <p className="text-amber-600 font-medium text-sm uppercase tracking-widest mb-3">About the KKKC Family</p>
             <h2 className="font-serif text-4xl font-bold text-stone-900 mb-6">
               A Legacy Built on<br />Love & Tradition
             </h2>
             <div className="space-y-4 text-stone-600 leading-relaxed">
               <p>
-                Welcome to the official KKC Family website — a living archive dedicated to celebrating our family's roots, honoring those who came before us, and connecting generations to come.
+                Welcome to the official KKKC Family website — a living archive dedicated to celebrating our family's roots, honoring those who came before us, and connecting generations to come.
               </p>
               <p>
                 This website is currently being set up. Family administrators can sign in to add founding members, build out the family tree, and begin adding our rich family history.
@@ -319,7 +319,7 @@ export default function HomePage() {
                     ? `${founderHead.full_name} & ${founderPartner.full_name}`
                     : founderHead
                     ? founderHead.full_name
-                    : 'KKC Family Founders'}
+                    : 'KKKC Family Founders'}
                 </p>
                 <p className="text-amber-300 text-sm mt-1">First Generation · The Beginning of Our Story</p>
               </div>
@@ -393,7 +393,7 @@ export default function HomePage() {
             },
             {
               icon: BookOpen, title: 'Family History',
-              desc: 'Read stories, milestones, traditions, and important events that have shaped the KKC family over the years.',
+              desc: 'Read stories, milestones, traditions, and important events that have shaped the KKKC family over the years.',
               color: 'bg-stone-50 text-stone-600',
             },
             {
@@ -423,7 +423,7 @@ export default function HomePage() {
           <TreePine className="w-12 h-12 text-amber-400 mx-auto mb-6" />
           <h2 className="font-serif text-4xl font-bold text-white mb-4">Ready to Explore?</h2>
           <p className="text-stone-300 text-lg mb-8">
-            Dive into the KKC family tree and discover the people and stories that make our family special.
+            Dive into the KKKC family tree and discover the people and stories that make our family special.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/tree">
@@ -445,4 +445,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 

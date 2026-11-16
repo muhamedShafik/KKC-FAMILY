@@ -1,28 +1,21 @@
+// src/lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/env';
 
-const supabaseUrl = (
-  import.meta.env.VITE_SUPABASE_URL ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_URL
-) as string;
-
-const supabaseAnonKey = (
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-) as string;
+const supabaseUrl = SUPABASE_URL;
+const supabaseAnonKey = SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
-  supabaseAnonKey &&
-  !supabaseUrl.includes('placeholder') &&
-  supabaseAnonKey !== 'placeholder-key'
+    supabaseAnonKey &&
+    !supabaseUrl.includes('placeholder') &&
+    supabaseAnonKey !== 'placeholder-key'
 );
 
 if (!isSupabaseConfigured) {
   console.info(
-    '[KKC Family] Supabase not connected yet. Operating in Local Interactive Mode with browser persistence. ' +
-    'To connect live Supabase database, create a Supabase project and provide VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local.'
+    '[KKKC Family] Supabase not connected yet. Operating in Local Interactive Mode with browser persistence. ' +
+      'To connect live Supabase database, create a Supabase project and provide VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local.'
   );
 }
 

@@ -12,7 +12,7 @@ export const SAMPLE_FOUNDER_HEAD: FamilyMember = {
   gender: 'male',
   dob: '1915-05-12',
   dod: '1992-11-20',
-  bio: 'Founding patriarch of the KKC Family. [Sample placeholder text: Please update with real biography, birthplace, and memories in the Admin Founders Setup].',
+  bio: 'Founding patriarch of the KKKC Family. [Sample placeholder text: Please update with real biography, birthplace, and memories in the Admin Founders Setup].',
   occupation: 'Family Patriarch & Scholar (Sample)',
   hometown: 'Ancestral Hometown (Sample)',
   branch: 'Roots & Heritage Branch',
@@ -33,7 +33,7 @@ export const SAMPLE_FOUNDER_PARTNER: FamilyMember = {
   gender: 'female',
   dob: '1920-08-18',
   dod: '1998-04-10',
-  bio: 'Founding matriarch of the KKC Family. [Sample placeholder text: Please update with real details in Admin Founders Setup].',
+  bio: 'Founding matriarch of the KKKC Family. [Sample placeholder text: Please update with real details in Admin Founders Setup].',
   occupation: 'Homemaker & Pillar of Family (Sample)',
   hometown: 'Ancestral Hometown (Sample)',
   branch: 'Roots & Heritage Branch',
@@ -207,7 +207,7 @@ export const SAMPLE_HISTORY: FamilyHistoryEntry[] = [
   {
     id: 'sample-hist-2',
     title: 'First Family Reunion & Celebration (Sample Story)',
-    content: '[Sample Fictional Story]: Celebrating our shared heritage and bringing cousins, aunts, uncles, and descendants together. Replace this with your actual KKC family reunion stories, annual festivals, and traditions.',
+    content: '[Sample Fictional Story]: Celebrating our shared heritage and bringing cousins, aunts, uncles, and descendants together. Replace this with your actual KKKC family reunion stories, annual festivals, and traditions.',
     event_date: '1975-12-25',
     event_type: 'other',
     image_url: null,
@@ -221,7 +221,7 @@ export const SAMPLE_GALLERY: GalleryItem[] = [
   {
     id: 'sample-gal-1',
     title: 'Founders Portrait — First Generation',
-    description: 'Original vintage portrait of the KKC Family founders.',
+    description: 'Original vintage portrait of the KKKC Family founders.',
     image_url: '/uploads/founders.jpg',
     category: 'historical',
     date_taken: '1960-01-01',
@@ -230,4 +230,5 @@ export const SAMPLE_GALLERY: GalleryItem[] = [
     created_at: new Date('2026-01-01').toISOString(),
   },
 ];
+
 

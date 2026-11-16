@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { TreePine, Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFounders } from '@/hooks/useFamily';
 
 const NAV = [
   { label: 'Home',    to: '/' },
@@ -17,6 +18,12 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { isAdmin } = useAuth();
   const { pathname } = useLocation();
+  const { data: founders = [] } = useFounders();
+
+  const founderPhoto =
+    founders[0]?.profile_photo_url ||
+    founders[1]?.profile_photo_url ||
+    '/uploads/founders.jpg';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -34,13 +41,20 @@ export default function Navbar() {
         : 'bg-transparent',
     )}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo with Founder Photo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm group-hover:bg-amber-600 transition-colors">
-            <TreePine className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-amber-400 shadow-sm bg-stone-900 flex-shrink-0 group-hover:border-amber-500 transition-colors">
+            <img
+              src={founderPhoto}
+              alt="KKKC Founder"
+              className="w-full h-full object-cover object-top"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/uploads/founders.jpg';
+              }}
+            />
           </div>
           <div className="leading-tight">
-            <span className="block font-serif font-bold text-stone-900 text-base leading-none">KKC</span>
+            <span className="block font-serif font-bold text-stone-900 text-base leading-none">KKKC</span>
             <span className="block text-xs text-amber-700 font-medium leading-none mt-0.5">Family</span>
           </div>
         </Link>
@@ -129,4 +143,5 @@ export default function Navbar() {
     </header>
   );
 }
+
 

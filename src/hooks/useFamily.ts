@@ -23,7 +23,8 @@ export function usePublishedMembers() {
       } catch {}
       return undefined;
     },
-    staleTime: 1000 * 60 * 5,
+    initialDataUpdatedAt: 0,
+    staleTime: 1000 * 30,
     gcTime: 1000 * 60 * 60,
   });
 }
@@ -57,7 +58,8 @@ export function useFounders() {
       } catch {}
       return undefined;
     },
-    staleTime: 1000 * 60 * 10,
+    initialDataUpdatedAt: 0,
+    staleTime: 1000 * 30,
     gcTime: 1000 * 60 * 60,
   });
 }
@@ -67,7 +69,7 @@ export function useAllMembers() {
   return useQuery<FamilyMember[]>({
     queryKey: ['members', 'all'],
     queryFn: fetchAllMembers,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 15,
   });
 }
 
@@ -132,7 +134,9 @@ export function useUpsertMember() {
     mutationFn: (m: Partial<FamilyMember> & { full_name: string }) => upsertMember(m),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['members'] });
+      qc.invalidateQueries({ queryKey: ['founders'] });
       qc.invalidateQueries({ queryKey: ['family-tree'] });
+      qc.invalidateQueries({ queryKey: ['member'] });
     },
   });
 }
@@ -144,7 +148,9 @@ export function useArchiveMember() {
     mutationFn: archiveMember,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['members'] });
+      qc.invalidateQueries({ queryKey: ['founders'] });
       qc.invalidateQueries({ queryKey: ['family-tree'] });
+      qc.invalidateQueries({ queryKey: ['member'] });
     },
   });
 }
@@ -156,7 +162,9 @@ export function useDeleteMember() {
     mutationFn: deleteMember,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['members'] });
+      qc.invalidateQueries({ queryKey: ['founders'] });
       qc.invalidateQueries({ queryKey: ['family-tree'] });
+      qc.invalidateQueries({ queryKey: ['member'] });
     },
   });
 }
@@ -169,7 +177,9 @@ export function useUpdateMemberStatus() {
       updateMemberStatus(id, status),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['members'] });
+      qc.invalidateQueries({ queryKey: ['founders'] });
       qc.invalidateQueries({ queryKey: ['family-tree'] });
+      qc.invalidateQueries({ queryKey: ['member'] });
     },
   });
 }
@@ -249,7 +259,9 @@ export function useSetupFounders() {
     mutationFn: (data: FoundersSetupPayload) => setupFounders(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['members'] });
+      qc.invalidateQueries({ queryKey: ['founders'] });
       qc.invalidateQueries({ queryKey: ['family-tree'] });
+      qc.invalidateQueries({ queryKey: ['member'] });
     },
   });
 }

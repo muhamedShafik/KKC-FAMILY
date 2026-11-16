@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useAllMembers, useGallery, useHistory } from '@/hooks/useFamily';
+import { useAllMembers, useGallery, useHistory, useFounders } from '@/hooks/useFamily';
 import toast from 'react-hot-toast';
 
 const ADMIN_NAV = [
@@ -25,6 +25,12 @@ function Sidebar({ mobile = false, onClose }: { mobile?: boolean; onClose?: () =
   const { data: members = [] } = useAllMembers();
   const { data: gallery = [] } = useGallery(true);
   const { data: history = [] } = useHistory(true);
+  const { data: founders = [] } = useFounders();
+
+  const founderPhoto =
+    founders[0]?.profile_photo_url ||
+    founders[1]?.profile_photo_url ||
+    '/uploads/founders.jpg';
 
   const pendingCount =
     members.filter(m => m.status === 'draft').length +
@@ -41,14 +47,21 @@ function Sidebar({ mobile = false, onClose }: { mobile?: boolean; onClose?: () =
       'flex flex-col bg-stone-900 text-white',
       mobile ? 'w-full h-full' : 'w-64 min-h-screen sticky top-0 h-screen',
     )}>
-      {/* Logo */}
+      {/* Logo with Founder Photo */}
       <div className="p-6 border-b border-stone-800 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0">
-            <TreePine className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-amber-400 shadow-sm bg-stone-800 flex-shrink-0">
+            <img
+              src={founderPhoto}
+              alt="KKKC Founder"
+              className="w-full h-full object-cover object-top"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/uploads/founders.jpg';
+              }}
+            />
           </div>
           <div>
-            <p className="font-serif font-bold text-white text-sm leading-none">KKC Family</p>
+            <p className="font-serif font-bold text-white text-sm leading-none">KKKC Family</p>
             <p className="text-amber-400 text-xs leading-none mt-0.5">Admin</p>
           </div>
         </Link>
@@ -160,7 +173,7 @@ export default function AdminLayout() {
           </button>
           <div className="flex items-center gap-2">
             <TreePine className="w-5 h-5 text-amber-400" />
-            <span className="font-serif font-bold text-white text-sm">KKC Admin</span>
+            <span className="font-serif font-bold text-white text-sm">KKKC Admin</span>
           </div>
         </div>
 
@@ -171,4 +184,5 @@ export default function AdminLayout() {
     </div>
   );
 }
+
 

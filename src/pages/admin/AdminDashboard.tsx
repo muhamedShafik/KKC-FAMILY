@@ -47,7 +47,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-serif text-3xl font-bold text-stone-900">Dashboard</h1>
-          <p className="text-stone-500 text-sm mt-1">Welcome back to the KKC Family admin.</p>
+          <p className="text-stone-500 text-sm mt-1">Welcome back to the KKKC Family admin.</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="sm" onClick={handleExport} loading={exportData.isPending}>
@@ -178,4 +178,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
 

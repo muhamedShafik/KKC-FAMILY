@@ -1,7 +1,7 @@
 {
-  "name": "KKC Family — Our Roots, Our Story",
-  "short_name": "KKC Family",
-  "description": "Explore the KKC family tree, history, and photo gallery.",
+  "name": "KKKC Family — Our Roots, Our Story",
+  "short_name": "KKKC Family",
+  "description": "Explore the KKKC family tree, history, and photo gallery.",
   "start_url": "/",
   "id": "/",
   "display": "standalone",
@@ -24,4 +24,6 @@
     }
   ]
 }
+
+
 

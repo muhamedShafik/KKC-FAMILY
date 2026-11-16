@@ -17,12 +17,12 @@ export default function Footer() {
                 <TreePine className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="block font-serif font-bold text-white text-base leading-none">KKC Family</span>
+                <span className="block font-serif font-bold text-white text-base leading-none">KKKC Family</span>
                 <span className="block text-xs text-amber-400 leading-none mt-0.5">Our Roots, Our Story</span>
               </div>
             </div>
             <p className="text-sm leading-relaxed text-stone-400 max-w-xs">
-              Preserving the legacy of the KKC family — connecting generations through shared memory, stories, and love.
+              Preserving the legacy of the KKKC family — connecting generations through shared memory, stories, and love.
             </p>
           </div>
 
@@ -56,12 +56,14 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-stone-500">
-          <p>© {year} KKC Family. All rights reserved.</p>
+          <p>© {year} KKKC Family. All rights reserved.</p>
           <p className="flex items-center gap-1.5">
-            Made with <Heart className="w-3.5 h-3.5 text-amber-400 fill-current" /> for the KKC Family
+            Made with <Heart className="w-3.5 h-3.5 text-amber-400 fill-current" /> for the KKKC Family
           </p>
         </div>
       </div>
     </footer>
   );
 }
+
+

@@ -304,7 +304,7 @@ export default function FamilyTreePage() {
   const { data: tree, isLoading, refetch } = useFamilyTree();
   const prefetchMember = usePrefetchMember();
   const [selected, setSelected] = useState<TreeNode | null>(null);
-  const [globalExpandDepth, setGlobalExpandDepth] = useState<number>(4);
+  const [globalExpandDepth, setGlobalExpandDepth] = useState<number>(999);
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const transformRef = useRef<any>(null);
@@ -362,7 +362,7 @@ export default function FamilyTreePage() {
             </div>
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">Interactive Family Tree</h1>
             <p className="text-stone-500 text-sm mt-1 max-w-xl">
-              Explore the KKC lineage from our founding roots across all generations. Drag to pan, scroll to zoom, or search any member.
+              Explore the KKKC lineage from our founding roots across all generations. Drag to pan, scroll to zoom, or search any member.
             </p>
           </div>
 
@@ -480,7 +480,7 @@ export default function FamilyTreePage() {
             <EmptyState
               icon={User}
               title="Family tree not initialized yet"
-              description="Start the KKC family tree by adding the first family head and their partner."
+              description="Start the KKKC family tree by adding the first family head and their partner."
               action={
                 <div className="flex flex-wrap gap-3 justify-center">
                   <Link to="/admin/setup-founders">
@@ -559,4 +559,5 @@ export default function FamilyTreePage() {
     </div>
   );
 }
+
 

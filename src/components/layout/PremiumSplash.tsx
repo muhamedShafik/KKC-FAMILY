@@ -15,23 +15,32 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
 
   useEffect(() => {
     // Check if splash was already shown in this session
-    const shown = sessionStorage.getItem('kkc_premium_splash_viewed');
+    const shown = sessionStorage.getItem('KKKC_premium_splash_viewed');
     if (shown) {
       setVisible(false);
       onComplete?.();
       return;
     }
 
-    // Auto-dismiss smoothly after 2.6 seconds
+    // Auto-dismiss smoothly after 3.8 seconds – guaranteed
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 3600);
+    }, 3800);
 
-    return () => clearTimeout(timer);
+    // Safety fallback: dismiss after 5 seconds no matter what
+    const safetyTimer = setTimeout(() => {
+      setVisible(false);
+      onComplete?.();
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   const handleDismiss = () => {
-    sessionStorage.setItem('kkc_premium_splash_viewed', 'true');
+    sessionStorage.setItem('KKKC_premium_splash_viewed', 'true');
     setVisible(false);
     onComplete?.();
   };
@@ -48,7 +57,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
           className="fixed inset-0 z-50 flex items-center justify-center bg-[#12100e] text-white cursor-pointer select-none overflow-hidden"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 50% 45%, rgba(200, 135, 31, 0.18) 0%, rgba(18, 16, 14, 0.95) 60%, #0d0b0a 100%)',
+              'radial-gradient(circle at 50% 45%, rgba(200, 135, 31, 0.22) 0%, rgba(18, 16, 14, 0.96) 65%, #0d0b0a 100%)',
           }}
         >
           {/* Subtle geometric luxury pattern overlay */}
@@ -60,13 +69,25 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
           />
 
           {/* Central Luxury Container */}
-          <div className="relative flex flex-col items-center text-center px-6 max-w-lg z-10">
+          <div className="relative flex flex-col items-center text-center px-6 max-w-xl z-10">
+            {/* Top Malayalam Association Name with subtle golden shimmer */}
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-4"
+            >
+              <p className="text-amber-300/90 text-sm sm:text-base font-semibold tracking-wide font-['Manjari','Noto_Sans_Malayalam',sans-serif] drop-shadow-[0_2px_8px_rgba(200,135,31,0.3)]">
+                കാരക്കുന്നമ്മൽ കലന്തൻകുഞ്ഞി കുടുംബ കൂട്ടായ്മ
+              </p>
+            </motion.div>
+
             {/* Medallion: Founders Portrait with Glowing Golden Aura */}
             <motion.div
               initial={{ scale: 0.82, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="relative mb-7"
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="relative mb-5"
             >
               {/* Outer pulsing gold ambient glow */}
               <div className="absolute -inset-3 rounded-full bg-gradient-to-tr from-amber-600/30 via-amber-400/20 to-transparent blur-xl animate-pulse" />
@@ -76,7 +97,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
                 <div className="w-full h-full rounded-full overflow-hidden bg-stone-900 border border-amber-200/40">
                   <img
                     src={founderPhoto}
-                    alt="KKC Founders"
+                    alt="KKKC Founders"
                     className="w-full h-full object-cover object-top filter contrast-105"
                     onError={e => {
                       (e.target as HTMLImageElement).src = '/uploads/founders.jpg';
@@ -85,23 +106,23 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
                 </div>
               </div>
 
-              {/* Heritage Crest Seal icon */}
-              <div className="absolute -bottom-2 inset-x-0 flex justify-center">
-                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 text-stone-950 text-[10px] font-bold tracking-widest uppercase px-3 py-0.5 rounded-full shadow-md border border-amber-300/60">
-                  EST. 1928
+              {/* Heritage Crest Seal icon with Estd. 2007 */}
+              <div className="absolute -bottom-2.5 inset-x-0 flex justify-center">
+                <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 text-stone-950 text-[10px] sm:text-xs font-bold tracking-wider uppercase px-3 py-0.5 rounded-full shadow-lg border border-amber-300/70">
+                  Estd. 2007
                 </span>
               </div>
             </motion.div>
 
-            {/* Title: KKC in Royal Serif with Shimmer */}
+            {/* Title: KKKC in Royal Serif with Shimmer */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-2"
+              className="mb-1"
             >
-              <h1 className="font-serif text-5xl sm:text-6xl font-bold tracking-tight bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(200,135,31,0.3)]">
-                K K C
+              <h1 className="font-serif text-5xl sm:text-6xl font-bold tracking-wider bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_16px_rgba(200,135,31,0.4)]">
+                K K K C
               </h1>
             </motion.div>
 
@@ -110,7 +131,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
               initial={{ opacity: 0, letterSpacing: '0.2em' }}
               animate={{ opacity: 1, letterSpacing: '0.38em' }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="text-xs sm:text-sm font-medium uppercase text-amber-300/90 mb-4"
+              className="text-xs sm:text-sm font-medium uppercase text-amber-300/90 mb-3"
             >
               F A M I L Y &nbsp; H E R I T A G E
             </motion.p>
@@ -118,27 +139,32 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
             {/* Fine Golden Divider */}
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 90, opacity: 1 }}
+              animate={{ width: 110, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="h-[1.5px] bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4"
+              className="h-[1.5px] bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-3.5"
             />
 
-            {/* Tagline */}
-            <motion.p
+            {/* Malayalam Location & Tagline */}
+            <motion.div
               initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 0.85, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="font-serif italic text-xs sm:text-sm text-stone-300 tracking-wide"
+              className="space-y-1"
             >
-              Our Roots, Our Story, Our Living Legacy
-            </motion.p>
+              <p className="text-xs sm:text-sm text-stone-300 font-medium font-['Manjari','Noto_Sans_Malayalam',sans-serif] tracking-wider">
+                ചേവായൂർ, കോഴിക്കോട് - 673 017
+              </p>
+              <p className="font-serif italic text-xs sm:text-xs text-amber-200/70 tracking-wide">
+                Our Roots, Our Story, Our Living Legacy
+              </p>
+            </motion.div>
 
             {/* Subtle Progress Bar & Enter Hint */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="mt-8 flex flex-col items-center gap-2"
+              transition={{ delay: 0.85, duration: 0.6 }}
+              className="mt-6 flex flex-col items-center gap-2"
             >
               <div className="w-36 h-[2px] bg-stone-800/80 rounded-full overflow-hidden">
                 <motion.div
@@ -158,4 +184,3 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
     </AnimatePresence>
   );
 }
-

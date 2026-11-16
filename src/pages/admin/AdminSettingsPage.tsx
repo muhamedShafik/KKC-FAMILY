@@ -11,7 +11,7 @@ export default function AdminSettingsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const exportData = useExport();
-  const [familyName, setFamilyName] = useState('KKC');
+  const [familyName, setFamilyName] = useState('KKKC');
   const [tagline, setTagline] = useState('Our Roots, Our Story');
 
   const handleExport = async () => {
@@ -114,4 +114,5 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
+
 

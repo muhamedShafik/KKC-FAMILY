@@ -1,5 +1,5 @@
-// KKC Family Service Worker for PWA
-const CACHE_NAME = 'kkc-family-pwa-v1';
+// KKKC Family Service Worker for PWA
+const CACHE_NAME = 'KKKC-family-pwa-v1';
 
 // Install event
 self.addEventListener('install', (event) => {
@@ -46,4 +46,5 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
 

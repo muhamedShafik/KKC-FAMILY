@@ -84,7 +84,7 @@ export default function MembersPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <SectionHeader
         title="Family Members"
-        subtitle="Browse and search through all members of the KKC family."
+        subtitle="Browse and search through all members of the KKKC family."
       />
 
       {/* Filters */}
@@ -162,4 +162,5 @@ export default function MembersPage() {
     </div>
   );
 }
+
 

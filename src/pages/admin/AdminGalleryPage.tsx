@@ -33,23 +33,34 @@ function GalleryItemForm({ item, onSave, onDelete, onClose }: {
 
   const onDrop = useCallback(async (files: File[]) => {
     const file = files[0]; if (!file) return;
-    setPreview(URL.createObjectURL(file));
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
     setUploading(true);
     try {
-      const path = `gallery-${Date.now()}-${file.name}`;
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const path = `gallery-${Date.now()}-${sanitizedName}`;
       const url = await uploadFile('gallery', path, file);
+      setPreview(url);
       setForm(f => ({ ...f, image_url: url }));
       toast.success('Photo uploaded');
     } catch (err: any) {
-      toast.error(err.message);
+      setPreview(item?.image_url ?? null);
+      toast.error(err.message || 'Upload failed');
     } finally {
       setUploading(false);
+      URL.revokeObjectURL(objectUrl);
     }
-  }, []);
+  }, [item?.image_url]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 1 });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    maxFiles: 1,
+    disabled: uploading,
+  });
 
   const handleSave = async () => {
+    if (uploading) { toast.error('Please wait for photo upload to finish'); return; }
     if (!form.title) { toast.error('Title required'); return; }
     if (!form.image_url) { toast.error('Photo required'); return; }
     setSaving(true);
@@ -62,24 +73,40 @@ function GalleryItemForm({ item, onSave, onDelete, onClose }: {
       {/* Photo */}
       {preview ? (
         <div className="relative rounded-xl overflow-hidden aspect-video">
-          <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-          <button
-            onClick={() => { setPreview(null); setForm(f => ({ ...f, image_url: undefined })); }}
-            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
+          <img src={preview} alt="Preview" className={`w-full h-full object-cover transition-opacity ${uploading ? 'opacity-50' : ''}`} />
+          {uploading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
+              <div className="w-8 h-8 border-3 border-amber-500 border-t-transparent rounded-full animate-spin mb-2" />
+              <p className="text-white text-xs font-medium px-2.5 py-1 rounded-full bg-black/50">Optimizing & Uploading…</p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setPreview(null); setForm(f => ({ ...f, image_url: undefined })); }}
+              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       ) : (
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-xl p-8 cursor-pointer text-center transition-colors ${
+            uploading ? 'opacity-60 cursor-not-allowed bg-stone-50 border-stone-200' :
             isDragActive ? 'border-amber-400 bg-amber-50' : 'border-stone-300 hover:border-amber-300'
           }`}
         >
           <input {...getInputProps()} />
           <Upload className="w-8 h-8 text-stone-300 mx-auto mb-2" />
-          {uploading ? <p className="text-amber-600 text-sm">Uploading…</p> : <p className="text-stone-400 text-sm">Drop a photo here or click to browse</p>}
+          {uploading ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-amber-600 text-sm font-medium">Compressing & Uploading…</p>
+            </div>
+          ) : (
+            <p className="text-stone-400 text-sm">Drop a photo here or click to browse</p>
+          )}
         </div>
       )}
 
@@ -106,7 +133,9 @@ function GalleryItemForm({ item, onSave, onDelete, onClose }: {
           </Button>
         )}
         <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-        <Button onClick={handleSave} loading={saving} className="flex-1">Save Photo</Button>
+        <Button onClick={handleSave} loading={saving || uploading} disabled={uploading} className="flex-1">
+          {uploading ? 'Uploading…' : 'Save Photo'}
+        </Button>
       </div>
     </div>
   );

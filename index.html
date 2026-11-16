@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="description" content="KKC Family — Our Roots, Our Story. Explore the KKC family tree, history, and photo gallery." />
+    <meta name="description" content="KKKC Family — Our Roots, Our Story. Explore the KKKC family tree, history, and photo gallery." />
     <meta name="theme-color" content="#c8871f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="KKC Family" />
+    <meta name="apple-mobile-web-app-title" content="KKKC Family" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/pwa-192.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>KKC Family</title>
+    <title>KKKC Family</title>
     <style>
       /* Pre-React Initial Loading Presentation */
       body {
@@ -24,7 +24,7 @@
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
         overflow-x: hidden;
       }
-      .kkc-entrance {
+      .KKKC-entrance {
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -35,7 +35,7 @@
         background: radial-gradient(circle at 50% 45%, rgba(200, 135, 31, 0.22) 0%, rgba(18, 16, 14, 0.95) 60%, #0d0b0a 100%);
         box-sizing: border-box;
       }
-      .kkc-medallion {
+      .KKKC-medallion {
         position: relative;
         width: 120px;
         height: 120px;
@@ -44,22 +44,22 @@
         background: linear-gradient(180deg, #f5d485 0%, #c8871f 50%, #784807 100%);
         box-shadow: 0 0 35px rgba(200, 135, 31, 0.38);
         margin-bottom: 24px;
-        animation: kkc-pulse 2.4s ease-in-out infinite alternate;
+        animation: KKKC-pulse 2.4s ease-in-out infinite alternate;
       }
-      .kkc-medallion-inner {
+      .KKKC-medallion-inner {
         width: 100%;
         height: 100%;
         border-radius: 50%;
         overflow: hidden;
         background-color: #1c1917;
       }
-      .kkc-medallion-img {
+      .KKKC-medallion-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         object-position: top;
       }
-      .kkc-title {
+      .KKKC-title {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 48px;
         font-weight: 700;
@@ -70,7 +70,7 @@
         -webkit-text-fill-color: transparent;
         text-shadow: 0 4px 20px rgba(200, 135, 31, 0.3);
       }
-      .kkc-subtitle {
+      .KKKC-subtitle {
         font-size: 11px;
         font-weight: 600;
         color: #fcd34d;
@@ -78,13 +78,13 @@
         text-transform: uppercase;
         margin: 0 0 16px 0;
       }
-      .kkc-divider {
+      .KKKC-divider {
         width: 80px;
         height: 1.5px;
         background: linear-gradient(90deg, transparent, #fbbf24, transparent);
         margin: 0 auto 16px auto;
       }
-      .kkc-tagline {
+      .KKKC-tagline {
         font-family: 'Playfair Display', Georgia, serif;
         font-style: italic;
         font-size: 13px;
@@ -92,7 +92,7 @@
         margin: 0 0 28px 0;
         opacity: 0.85;
       }
-      .kkc-progress-track {
+      .KKKC-progress-track {
         width: 140px;
         height: 2px;
         background-color: rgba(68, 64, 60, 0.5);
@@ -101,20 +101,20 @@
         margin: 0 auto;
         position: relative;
       }
-      .kkc-progress-bar {
+      .KKKC-progress-bar {
         position: absolute;
         top: 0;
         left: 0;
         height: 100%;
         width: 100%;
         background: linear-gradient(90deg, transparent, #fbbf24, transparent);
-        animation: kkc-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        animation: KKKC-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
-      @keyframes kkc-pulse {
+      @keyframes KKKC-pulse {
         from { transform: scale(0.98); box-shadow: 0 0 25px rgba(200, 135, 31, 0.25); }
         to { transform: scale(1.02); box-shadow: 0 0 45px rgba(200, 135, 31, 0.45); }
       }
-      @keyframes kkc-shimmer {
+      @keyframes KKKC-shimmer {
         from { transform: translateX(-100%); }
         to { transform: translateX(100%); }
       }
@@ -122,21 +122,23 @@
   </head>
   <body>
     <div id="root">
-      <div class="kkc-entrance">
-        <div class="kkc-medallion">
-          <div class="kkc-medallion-inner">
-            <img src="/uploads/founders.jpg" alt="KKC Family Founders" class="kkc-medallion-img" onerror="this.style.display='none'" />
+      <div class="KKKC-entrance">
+        <div class="KKKC-medallion">
+          <div class="KKKC-medallion-inner">
+            <img src="/uploads/founders.jpg" alt="KKKC Family Founders" class="KKKC-medallion-img" onerror="this.style.display='none'" />
           </div>
         </div>
-        <h1 class="kkc-title">K K C</h1>
-        <p class="kkc-subtitle">Family Heritage</p>
-        <div class="kkc-divider"></div>
-        <p class="kkc-tagline">Our Roots, Our Story, Our Living Legacy</p>
-        <div class="kkc-progress-track">
-          <div class="kkc-progress-bar"></div>
+        <h1 class="KKKC-title">K K C</h1>
+        <p class="KKKC-subtitle">Family Heritage</p>
+        <div class="KKKC-divider"></div>
+        <p class="KKKC-tagline">Our Roots, Our Story, Our Living Legacy</p>
+        <div class="KKKC-progress-track">
+          <div class="KKKC-progress-bar"></div>
         </div>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+
+

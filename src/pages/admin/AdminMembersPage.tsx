@@ -53,7 +53,7 @@ export default function AdminMembersPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-serif text-2xl font-bold text-stone-900">Family Members</h1>
-          <p className="text-stone-500 text-sm mt-0.5">Manage all members of the KKC family.</p>
+          <p className="text-stone-500 text-sm mt-0.5">Manage all members of the KKKC family.</p>
         </div>
         <Link to="/admin/members/add">
           <Button size="sm"><Plus className="w-4 h-4" /> Add Member</Button>
@@ -194,4 +194,5 @@ export default function AdminMembersPage() {
     </div>
   );
 }
+
 

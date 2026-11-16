@@ -1,5 +1,5 @@
 // ============================================================
-// KKC Family Website – Core Types
+// KKKC Family Website – Core Types
 // ============================================================
 
 export type Gender = 'male' | 'female' | 'other';
@@ -115,4 +115,5 @@ export interface InviteToken {
   created_by: string | null;
   is_active: boolean;
 }
+
 

@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Upload, X, Plus, Trash2, Eye, Save, Check } from 'lucide-react';
+import { ArrowLeft, Upload, X, Plus, Eye, Save, Check } from 'lucide-react';
 import { useAllMembers, useUpsertMember, useUpdateMemberStatus } from '@/hooks/useFamily';
 import { fetchMemberWithRelations, addRelationship, removeRelationship, uploadFile } from '@/lib/queries';
 import { Button, Input, Textarea, Select, Avatar, Badge, Modal } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import type { FamilyMember, FamilyMemberWithRelations, RelationshipType } from '@/types';
+import type { FamilyMember, RelationshipType } from '@/types';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: 'Male' },
@@ -16,35 +16,55 @@ const GENDER_OPTIONS = [
   { value: 'other', label: 'Other' },
 ];
 
-const GENERATION_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
-  value: String(i + 1),
-  label: `Generation ${i + 1}`,
-}));
-
 // ── Photo Upload Drop Zone ─────────────────────────────────────
-function PhotoUpload({ value, onChange }: { value: string | null; onChange: (url: string) => void }) {
+function PhotoUpload({
+  value,
+  onChange,
+  onUploadingChange,
+}: {
+  value: string | null;
+  onChange: (url: string) => void;
+  onUploadingChange?: (uploading: boolean) => void;
+}) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value);
+
+  useEffect(() => {
+    setPreview(value);
+  }, [value]);
 
   const onDrop = useCallback(async (files: File[]) => {
     const file = files[0];
     if (!file) return;
-    setPreview(URL.createObjectURL(file));
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
     setUploading(true);
+    onUploadingChange?.(true);
+
     try {
-      const path = `profile-${Date.now()}-${file.name}`;
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const path = `profile-${Date.now()}-${sanitizedName}`;
       const url = await uploadFile('profile-photos', path, file);
+      setPreview(url);
       onChange(url);
-      toast.success('Photo uploaded');
+      toast.success('Photo uploaded to Cloudinary');
     } catch (err: any) {
-      toast.error(`Upload failed: ${err.message}`);
+      setPreview(value);
+      console.error('Image upload error:', err);
+      toast.error(`Upload failed: ${err.message || 'Could not upload photo'}`);
     } finally {
       setUploading(false);
+      onUploadingChange?.(false);
+      URL.revokeObjectURL(objectUrl);
     }
-  }, [onChange]);
+  }, [value, onChange, onUploadingChange]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop, accept: { 'image/*': [] }, maxFiles: 1,
+    onDrop,
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.avif'] },
+    maxFiles: 1,
+    disabled: uploading,
   });
 
   return (
@@ -53,35 +73,51 @@ function PhotoUpload({ value, onChange }: { value: string | null; onChange: (url
       <div className="flex items-start gap-4">
         {preview ? (
           <div className="relative">
-            <img src={preview} alt="Profile preview" className="w-20 h-20 rounded-xl object-cover border-2 border-amber-200" />
-            <button
-              onClick={() => { setPreview(null); onChange(''); }}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center"
-            >
-              <X className="w-3 h-3" />
-            </button>
+            <img
+              src={preview}
+              alt="Profile preview"
+              className={cn(
+                "w-20 h-20 rounded-xl object-cover border-2 border-amber-200 transition-opacity",
+                uploading && "opacity-50"
+              )}
+            />
+            {uploading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setPreview(null); onChange(''); }}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow transition-colors"
+                title="Remove photo"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
           </div>
         ) : (
           <div className="w-20 h-20 rounded-xl bg-stone-100 border-2 border-dashed border-stone-300 flex items-center justify-center text-stone-400">
             <Upload className="w-6 h-6" />
           </div>
         )}
-        <div
-          {...getRootProps()}
-          className={cn(
-            'flex-1 border-2 border-dashed rounded-xl p-4 cursor-pointer transition-colors text-center',
-            isDragActive ? 'border-amber-400 bg-amber-50' : 'border-stone-300 hover:border-amber-300 hover:bg-amber-50/50',
-          )}
-        >
+        <div {...getRootProps()} className={cn(
+          'flex-1 border-2 border-dashed rounded-xl p-4 cursor-pointer transition-colors text-center',
+          uploading ? 'opacity-60 cursor-not-allowed bg-stone-50 border-stone-200' :
+          isDragActive ? 'border-amber-400 bg-amber-50' : 'border-stone-300 hover:border-amber-300 hover:bg-amber-50/50',
+        )}>
           <input {...getInputProps()} />
           {uploading ? (
-            <p className="text-sm text-amber-600">Uploading…</p>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-amber-600 font-medium">Uploading to Cloudinary…</p>
+            </div>
           ) : isDragActive ? (
             <p className="text-sm text-amber-600">Drop the photo here</p>
           ) : (
             <>
               <p className="text-sm text-stone-600">Drag & drop a photo, or click to browse</p>
-              <p className="text-xs text-stone-400 mt-1">JPG, PNG, WEBP · Max 5MB</p>
+              <p className="text-xs text-stone-400 mt-1">JPG, PNG, WEBP · Max 10MB</p>
             </>
           )}
         </div>
@@ -92,7 +128,13 @@ function PhotoUpload({ value, onChange }: { value: string | null; onChange: (url
 
 // ── Relationship Picker ────────────────────────────────────────
 function RelationPicker({
-  label, relType, memberRelations, allMembers, memberId, onAdd, onRemove,
+  label,
+  relType,
+  memberRelations,
+  allMembers,
+  memberId,
+  onAdd,
+  onRemove,
 }: {
   label: string;
   relType: RelationshipType;
@@ -115,15 +157,10 @@ function RelationPicker({
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-medium text-stone-700">{label}</label>
-        <button
-          type="button"
-          onClick={() => setShowPicker(true)}
-          className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800"
-        >
+        <button type="button" onClick={() => setShowPicker(true)} className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800">
           <Plus className="w-3 h-3" /> Add
         </button>
       </div>
-
       {memberRelations.length === 0 ? (
         <p className="text-sm text-stone-400 italic">None added yet</p>
       ) : (
@@ -132,18 +169,13 @@ function RelationPicker({
             <div key={m.id} className="flex items-center gap-2.5 p-2 bg-stone-50 rounded-lg">
               <Avatar name={m.full_name} src={m.profile_photo_url} size="xs" />
               <span className="text-sm text-stone-800 flex-1">{m.full_name}</span>
-              <button
-                type="button"
-                onClick={() => onRemove(m.id)}
-                className="text-stone-400 hover:text-red-500 p-0.5 rounded"
-              >
+              <button type="button" onClick={() => onRemove(m.id)} className="text-stone-400 hover:text-red-500 p-0.5 rounded">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
         </div>
       )}
-
       <Modal open={showPicker} onClose={() => setShowPicker(false)} title={`Add ${label}`} size="sm">
         <input
           value={search}
@@ -167,8 +199,8 @@ function RelationPicker({
                 className="flex items-center gap-2.5 w-full p-2.5 rounded-lg hover:bg-amber-50 transition-colors text-left"
               >
                 <Avatar name={m.full_name} src={m.profile_photo_url} size="xs" />
-                <div>
-                  <p className="text-sm font-medium text-stone-900">{m.full_name}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-stone-900 truncate">{m.full_name}</p>
                   {m.branch && <p className="text-xs text-stone-400">{m.branch}</p>}
                 </div>
               </button>
@@ -195,16 +227,20 @@ export default function AdminMemberForm() {
     is_public: true,
     gender: 'male',
     generation: 1,
+    phone: null,
   });
+
   const [memberRelations, setMemberRelations] = useState<{
     parents: FamilyMember[];
     spouses: FamilyMember[];
     children: FamilyMember[];
     siblings: FamilyMember[];
   }>({ parents: [], spouses: [], children: [], siblings: [] });
+
   const [savedId, setSavedId] = useState<string | null>(id ?? null);
   const [loading, setLoading] = useState(isEditing);
   const [tab, setTab] = useState<'info' | 'relations' | 'review'>('info');
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   useEffect(() => {
     if (isEditing && id) {
@@ -227,6 +263,10 @@ export default function AdminMemberForm() {
     setFormData(d => ({ ...d, [key]: value }));
 
   const handleSave = async () => {
+    if (photoUploading) {
+      toast.error('Please wait for the photo to finish uploading');
+      return;
+    }
     if (!formData.full_name?.trim()) {
       toast.error('Full name is required');
       return;
@@ -241,7 +281,9 @@ export default function AdminMemberForm() {
       setSavedId(saved.id);
       setFormData(saved);
       queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['founders'] });
       queryClient.invalidateQueries({ queryKey: ['family-tree'] });
+      queryClient.invalidateQueries({ queryKey: ['member'] });
       toast.success(isEditing ? 'Member updated' : 'Member saved successfully');
       if (!isEditing) navigate(`/admin/members/${saved.id}/edit`, { replace: true });
     } catch (err: any) {
@@ -256,18 +298,14 @@ export default function AdminMemberForm() {
   };
 
   const handleAddRelation = async (relatedId: string, type: RelationshipType) => {
-    if (!savedId) {
-      toast.error('Save the member first, then add relations');
-      return;
-    }
+    if (!savedId) { toast.error('Save the member first, then add relations'); return; }
     try {
       await addRelationship(savedId, relatedId, type);
       queryClient.removeQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['founders'] });
       queryClient.invalidateQueries({ queryKey: ['member'] });
-
-      // Refresh relations directly from DB
       const updated = await fetchMemberWithRelations(savedId);
       if (updated) {
         setMemberRelations({
@@ -278,11 +316,9 @@ export default function AdminMemberForm() {
         });
       }
       const label =
-        type === 'child'
-          ? 'Child connected (bidirectionally linked parent & child)'
-          : type === 'parent'
-          ? 'Parent connected (bidirectionally linked child & parent)'
-          : `${type.charAt(0).toUpperCase() + type.slice(1)} connected`;
+        type === 'child' ? 'Child connected (bidirectionally linked parent & child)'
+        : type === 'parent' ? 'Parent connected (bidirectionally linked child & parent)'
+        : `${type.charAt(0).toUpperCase() + type.slice(1)} connected`;
       toast.success(label);
     } catch (err: any) {
       console.error('Relationship save error:', err);
@@ -297,8 +333,8 @@ export default function AdminMemberForm() {
       queryClient.removeQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['family-tree'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['founders'] });
       queryClient.invalidateQueries({ queryKey: ['member'] });
-
       const updated = await fetchMemberWithRelations(savedId);
       if (updated) {
         setMemberRelations({
@@ -333,12 +369,8 @@ export default function AdminMemberForm() {
           <ArrowLeft className="w-4 h-4 text-stone-600" />
         </Link>
         <div>
-          <h1 className="font-serif text-2xl font-bold text-stone-900">
-            {isEditing ? 'Edit Family Member' : 'Add Family Member'}
-          </h1>
-          <p className="text-stone-500 text-sm mt-0.5">
-            {isEditing ? 'Update details and relationships' : 'Fill in details and save as draft first'}
-          </p>
+          <h1 className="font-serif text-2xl font-bold text-stone-900">{isEditing ? 'Edit Family Member' : 'Add Family Member'}</h1>
+          <p className="text-stone-500 text-sm mt-0.5">{isEditing ? 'Update details and relationships' : 'Fill in details and save as draft first'}</p>
         </div>
       </div>
 
@@ -358,157 +390,58 @@ export default function AdminMemberForm() {
         ))}
       </div>
 
-      {/* ── Info Tab ─────────────────────────────────────────── */}
+      {/* Info Tab */}
       {tab === 'info' && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 space-y-6">
           <PhotoUpload
             value={formData.profile_photo_url ?? null}
             onChange={url => set('profile_photo_url', url)}
+            onUploadingChange={setPhotoUploading}
           />
-
           <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Full Name *"
-              value={formData.full_name ?? ''}
-              onChange={e => set('full_name', e.target.value)}
-              placeholder="e.g. Krishnan Kumaraswamy"
-            />
-            <Select
-              label="Gender"
-              options={GENDER_OPTIONS}
-              value={formData.gender ?? 'male'}
-              onChange={e => set('gender', e.target.value)}
-            />
+            <Input label="Full Name *" value={formData.full_name ?? ''} onChange={e => set('full_name', e.target.value)} placeholder="e.g. Jaleel k" />
+            <Select label="Gender" options={GENDER_OPTIONS} value={formData.gender ?? 'male'} onChange={e => set('gender', e.target.value)} />
           </div>
-
           <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Date of Birth"
-              type="date"
-              value={formData.dob ?? ''}
-              onChange={e => set('dob', e.target.value || null)}
-            />
-            <Input
-              label="Date of Death (if applicable)"
-              type="date"
-              value={formData.dod ?? ''}
-              onChange={e => set('dod', e.target.value || null)}
-            />
+            <Input label="Date of Birth" type="date" value={formData.dob ?? ''} onChange={e => set('dob', e.target.value || null)} />
+            <Input label="Date of Death (if applicable)" type="date" value={formData.dod ?? ''} onChange={e => set('dod', e.target.value || null)} />
           </div>
-
           <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Occupation"
-              value={formData.occupation ?? ''}
-              onChange={e => set('occupation', e.target.value || null)}
-              placeholder="e.g. Farmer, Teacher"
-            />
-            <Input
-              label="Hometown / Place"
-              value={formData.hometown ?? ''}
-              onChange={e => set('hometown', e.target.value || null)}
-              placeholder="e.g. Palakkad, Kerala"
-            />
+            <Input label="Occupation" value={formData.occupation ?? ''} onChange={e => set('occupation', e.target.value || null)} placeholder="e.g. Farmer, Teacher" />
+            <Input label="Hometown / Place" value={formData.hometown ?? ''} onChange={e => set('hometown', e.target.value || null)} placeholder="e.g. Palakkad, Kerala" />
           </div>
-
           <div className="grid sm:grid-cols-2 gap-4">
-            <Select
-              label="Generation"
-              options={GENERATION_OPTIONS}
-              value={String(formData.generation ?? 1)}
-              onChange={e => set('generation', parseInt(e.target.value))}
-            />
-            <Input
-              label="Family Branch"
-              value={formData.branch ?? ''}
-              onChange={e => set('branch', e.target.value || null)}
-              placeholder="e.g. Main Branch, Southern Branch"
-            />
+            <Input label="Family Branch" value={formData.branch ?? ''} onChange={e => set('branch', e.target.value || null)} placeholder="e.g. Main Branch, Southern Branch" />
+            <Input label="Phone Number (optional)" type="tel" placeholder="e.g. +1-555-123-4567" value={formData.phone ?? ''} onChange={e => set('phone', e.target.value || null)} className="mt-4" />
           </div>
-
-          <Textarea
-            label="Biography"
-            value={formData.bio ?? ''}
-            onChange={e => set('bio', e.target.value || null)}
-            placeholder="Write a biography, life story, or meaningful description…"
-            rows={5}
-          />
-
-          <Textarea
-            label="Private Notes (not shown publicly)"
-            value={formData.private_notes ?? ''}
-            onChange={e => set('private_notes', e.target.value || null)}
-            placeholder="Private contact info, notes for admins only…"
-            rows={3}
-          />
-
+          <Textarea label="Biography" value={formData.bio ?? ''} onChange={e => set('bio', e.target.value || null)} placeholder="Write a biography, life story, or meaningful description…" rows={5} />
+          <Textarea label="Private Notes (not shown publicly)" value={formData.private_notes ?? ''} onChange={e => set('private_notes', e.target.value || null)} placeholder="Private contact info, notes for admins only…" rows={3} />
           <div className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl">
-            <input
-              id="is_public"
-              type="checkbox"
-              checked={formData.is_public ?? true}
-              onChange={e => set('is_public', e.target.checked)}
-              className="w-4 h-4 text-amber-500 rounded"
-            />
-            <label htmlFor="is_public" className="text-sm text-stone-700">
-              Visible on public family website <span className="text-stone-400">(when published)</span>
-            </label>
+            <input id="is_public" type="checkbox" checked={formData.is_public ?? true} onChange={e => set('is_public', e.target.checked)} className="w-4 h-4 text-amber-500 rounded" />
+            <label htmlFor="is_public" className="text-sm text-stone-700">Visible on public family website <span className="text-stone-400">(when published)</span></label>
           </div>
         </div>
       )}
 
-      {/* ── Relations Tab ─────────────────────────────────────── */}
+      {/* Relations Tab */}
       {tab === 'relations' && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 space-y-8">
           {!savedId && (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
-              💡 Save the member first (in Basic Info) before adding relationships.
-            </div>
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">💡 Save the member first (in Basic Info) before adding relationships.</div>
           )}
-
-          <RelationPicker
-            label="Parents"
-            relType="parent"
-            memberRelations={memberRelations.parents}
-            allMembers={allMembers}
-            memberId={savedId ?? ''}
-            onAdd={handleAddRelation}
-            onRemove={id => handleRemoveRelation(id, 'parents')}
-          />
-
-          <RelationPicker
-            label="Spouse / Partner"
-            relType="spouse"
-            memberRelations={memberRelations.spouses}
-            allMembers={allMembers}
-            memberId={savedId ?? ''}
-            onAdd={handleAddRelation}
-            onRemove={id => handleRemoveRelation(id, 'spouses')}
-          />
-
-          <RelationPicker
-            label="Children"
-            relType="child"
-            memberRelations={memberRelations.children}
-            allMembers={allMembers}
-            memberId={savedId ?? ''}
-            onAdd={handleAddRelation}
-            onRemove={id => handleRemoveRelation(id, 'children')}
-          />
-
-          <RelationPicker
-            label="Siblings"
-            relType="sibling"
-            memberRelations={memberRelations.siblings}
-            allMembers={allMembers}
-            memberId={savedId ?? ''}
-            onAdd={handleAddRelation}
-            onRemove={id => handleRemoveRelation(id, 'siblings')}
-          />
+          {savedId && (
+            <>
+              <Input label="Phone Number (optional)" type="tel" placeholder="e.g. +1-555-123-4567" value={formData.phone ?? ''} onChange={e => set('phone', e.target.value || null)} className="mt-4" />
+              <RelationPicker label="Parents" relType="parent" memberRelations={memberRelations.parents} allMembers={allMembers} memberId={savedId} onAdd={handleAddRelation} onRemove={id => handleRemoveRelation(id, 'parents')} />
+              <RelationPicker label="Spouse / Partner" relType="spouse" memberRelations={memberRelations.spouses} allMembers={allMembers} memberId={savedId} onAdd={handleAddRelation} onRemove={id => handleRemoveRelation(id, 'spouses')} />
+              <RelationPicker label="Children" relType="child" memberRelations={memberRelations.children} allMembers={allMembers} memberId={savedId} onAdd={handleAddRelation} onRemove={id => handleRemoveRelation(id, 'children')} />
+              <RelationPicker label="Siblings" relType="sibling" memberRelations={memberRelations.siblings} allMembers={allMembers} memberId={savedId} onAdd={handleAddRelation} onRemove={id => handleRemoveRelation(id, 'siblings')} />
+            </>
+          )}
         </div>
       )}
 
-      {/* ── Review Tab ────────────────────────────────────────── */}
+      {/* Review Tab */}
       {tab === 'review' && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
           <div className="flex items-center gap-4 mb-6">
@@ -517,14 +450,11 @@ export default function AdminMemberForm() {
               <h2 className="font-serif text-2xl font-bold text-stone-900">{formData.full_name || '—'}</h2>
               <p className="text-stone-500 text-sm">{formData.occupation ?? ''}</p>
               <div className="flex gap-2 mt-2">
-                <Badge variant={formData.status === 'published' ? 'green' : 'amber'}>
-                  {formData.status ?? 'draft'}
-                </Badge>
+                <Badge variant={formData.status === 'published' ? 'green' : 'amber'}>{formData.status ?? 'draft'}</Badge>
                 {!formData.is_public && <Badge variant="stone">Private</Badge>}
               </div>
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
             {[
               ['Full Name', formData.full_name],
@@ -535,44 +465,43 @@ export default function AdminMemberForm() {
               ['Hometown', formData.hometown],
               ['Generation', formData.generation ? `Gen ${formData.generation}` : null],
               ['Branch', formData.branch],
-            ].map(([label, value]) => (
+              ['Phone', formData.phone],
+            ].map(([label, value]) =>
               value ? (
                 <div key={label as string} className="p-3 bg-stone-50 rounded-xl">
                   <p className="text-xs text-stone-400 mb-0.5">{label}</p>
                   <p className="font-medium text-stone-900">{value}</p>
                 </div>
               ) : null
-            ))}
+            )}
           </div>
-
           {formData.bio && (
             <div className="p-4 bg-amber-50 rounded-xl mb-6">
               <p className="text-xs text-stone-500 mb-1">Biography</p>
               <p className="text-sm text-stone-700">{formData.bio}</p>
             </div>
           )}
-
           <div className="border-t border-stone-100 pt-6 flex flex-col sm:flex-row gap-3">
             <Button
               variant="outline"
               onClick={handleSave}
-              loading={upsert.isPending}
+              loading={upsert.isPending || photoUploading}
+              disabled={photoUploading}
               className="flex-1"
             >
               <Save className="w-4 h-4" /> Save as Draft
             </Button>
             <Button
               onClick={handlePublish}
-              loading={updateStatus.isPending}
+              loading={updateStatus.isPending || photoUploading}
+              disabled={photoUploading}
               className="flex-1"
             >
               <Check className="w-4 h-4" /> Publish to Website
             </Button>
             {savedId && (
               <Link to={`/members/${savedId}`} target="_blank">
-                <Button variant="ghost" className="flex-1">
-                  <Eye className="w-4 h-4" /> Preview
-                </Button>
+                <Button variant="ghost" className="flex-1"><Eye className="w-4 h-4" /> Preview</Button>
               </Link>
             )}
           </div>
@@ -582,16 +511,16 @@ export default function AdminMemberForm() {
       {/* Sticky save bar */}
       {tab !== 'review' && (
         <div className="mt-6 flex gap-3 justify-end">
-          <Button variant="outline" onClick={() => navigate('/admin/members')}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} loading={upsert.isPending}>
-            <Save className="w-4 h-4" />
-            {isEditing ? 'Save Changes' : 'Save as Draft'}
+          <Button variant="outline" onClick={() => navigate('/admin/members')}>Cancel</Button>
+          <Button
+            onClick={handleSave}
+            loading={upsert.isPending || photoUploading}
+            disabled={photoUploading}
+          >
+            <Save className="w-4 h-4" /> {photoUploading ? 'Uploading photo…' : isEditing ? 'Save Changes' : 'Save as Draft'}
           </Button>
         </div>
       )}
     </div>
   );
 }
-

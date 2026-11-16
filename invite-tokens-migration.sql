@@ -1,5 +1,5 @@
 -- ============================================================
--- KKC Family Website: Public Invite Tokens & Contributor Policies
+-- KKKC Family Website: Public Invite Tokens & Contributor Policies
 -- Run this in your Supabase SQL Editor
 -- ============================================================
 
@@ -59,3 +59,4 @@ DROP POLICY IF EXISTS "Public can upload gallery photos" ON storage.objects;
 CREATE POLICY "Public can upload gallery photos"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'gallery');
+

@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-amber-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
             <TreePine className="w-8 h-8 text-white" />
           </div>
-          <h1 className="font-serif text-3xl font-bold text-white mb-1">KKC Family</h1>
+          <h1 className="font-serif text-3xl font-bold text-white mb-1">KKKC Family</h1>
           <p className="text-stone-400 text-sm">Private Admin Portal</p>
         </div>
 
@@ -112,3 +112,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+

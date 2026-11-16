@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { TreePine, Users, Image as ImageIcon, BookOpen, CheckCircle, Clock, ArrowLeft, Upload, X } from 'lucide-react';
@@ -32,54 +32,74 @@ function PhotoUploader({
   onChange: (url: string | null) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(value);
+
+  useEffect(() => {
+    setPreview(value);
+  }, [value]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
 
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
     setUploading(true);
     try {
       const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const path = `${bucket}-${Date.now()}-${sanitizedName}`;
       const url = await uploadFile(bucket, path, file);
+      setPreview(url);
       onChange(url);
       toast.success('Photo uploaded successfully');
     } catch (err: any) {
       console.error(err);
+      setPreview(value);
       toast.error(err.message || 'Failed to upload photo');
     } finally {
       setUploading(false);
+      URL.revokeObjectURL(objectUrl);
     }
-  }, [bucket, onChange]);
+  }, [bucket, value, onChange]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
     maxFiles: 1,
+    disabled: uploading,
   });
 
   return (
     <div className="space-y-1.5">
       <label className="text-sm font-medium text-stone-700">{label}</label>
-      {value ? (
+      {preview ? (
         <div className="relative inline-block">
           <img
-            src={value}
+            src={preview}
             alt="Upload preview"
-            className="w-28 h-28 object-cover rounded-xl border border-stone-200 shadow-sm"
+            className={`w-28 h-28 object-cover rounded-xl border border-stone-200 shadow-sm transition-opacity ${
+              uploading ? 'opacity-50' : ''
+            }`}
           />
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md transition-colors"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
+          {uploading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setPreview(null); onChange(null); }}
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       ) : (
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+            uploading ? 'opacity-60 cursor-not-allowed bg-stone-50 border-stone-200' :
             isDragActive
               ? 'border-amber-400 bg-amber-50'
               : 'border-stone-300 hover:border-amber-300 bg-stone-50/50 hover:bg-amber-50/30'
@@ -88,11 +108,14 @@ function PhotoUploader({
           <input {...getInputProps()} />
           <Upload className="w-7 h-7 text-stone-400 mx-auto mb-2" />
           {uploading ? (
-            <p className="text-sm font-medium text-amber-600 animate-pulse">Uploading photo...</p>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-medium text-amber-600">Compressing & uploading…</p>
+            </div>
           ) : (
             <>
               <p className="text-sm font-medium text-stone-700">Click to upload or drag photo here</p>
-              <p className="text-xs text-stone-400 mt-0.5">JPG, PNG, or WEBP (up to 5MB)</p>
+              <p className="text-xs text-stone-400 mt-0.5">JPG, PNG, or WEBP (instant upload)</p>
             </>
           )}
         </div>
@@ -194,7 +217,7 @@ function AddMemberForm({ onSuccess }: { onSuccess: () => void }) {
         label="Family Branch"
         value={form.branch}
         onChange={e => setForm(f => ({ ...f, branch: e.target.value }))}
-        placeholder="e.g. KKC Main Branch"
+        placeholder="e.g. KKKC Main Branch"
       />
       <Input
         label="Phone Number"
@@ -353,7 +376,7 @@ function AddHistoryForm({ onSuccess }: { onSuccess: () => void }) {
         label="Event / Story Title *"
         value={form.title}
         onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-        placeholder="e.g. The Establishment of KKC House in 1952"
+        placeholder="e.g. The Establishment of KKKC House in 1952"
         required
       />
       <Select
@@ -483,11 +506,15 @@ export default function PublicContributePage() {
       <header className="bg-white border-b border-stone-100 shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
-              <TreePine className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-amber-400 shadow-sm bg-stone-900 flex-shrink-0">
+              <img
+                src="/uploads/founders.jpg"
+                alt="KKKC Founder"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
             <div>
-              <p className="font-serif font-bold text-stone-900 text-sm leading-none">KKC Family</p>
+              <p className="font-serif font-bold text-stone-900 text-sm leading-none">KKKC Family</p>
               <p className="text-amber-600 text-xs leading-none mt-0.5">Contribution Portal</p>
             </div>
           </div>
@@ -556,3 +583,4 @@ export default function PublicContributePage() {
     </div>
   );
 }
+

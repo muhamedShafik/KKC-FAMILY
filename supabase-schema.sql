@@ -1,5 +1,5 @@
 -- ============================================================
--- KKC Family Website – Complete Supabase Database Schema
+-- KKKC Family Website – Complete Supabase Database Schema
 -- Paste and Run this in your Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/_/sql
 -- ============================================================
@@ -241,3 +241,4 @@ CREATE POLICY "Public can view gallery"
 CREATE POLICY "Admins can upload gallery"
   ON storage.objects FOR ALL
   TO authenticated USING (bucket_id = 'gallery') WITH CHECK (bucket_id = 'gallery');
+

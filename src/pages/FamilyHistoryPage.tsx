@@ -76,7 +76,7 @@ export default function FamilyHistoryPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <SectionHeader
         title="Family History"
-        subtitle="Stories, milestones, traditions, and important events that shaped the KKC family."
+        subtitle="Stories, milestones, traditions, and important events that shaped the KKKC family."
       />
 
       {/* Filter chips */}
@@ -122,4 +122,5 @@ export default function FamilyHistoryPage() {
     </div>
   );
 }
+
 

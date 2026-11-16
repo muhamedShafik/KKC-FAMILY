@@ -57,8 +57,8 @@ export default function InviteGeneratorPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'KKC Family Contribution Link',
-          text: 'Here is your 7-hour invite link to add family members, photos, and history to the KKC Family website:',
+          title: 'KKKC Family Contribution Link',
+          text: 'Here is your 7-hour invite link to add family members, photos, and history to the KKKC Family website:',
           url,
         });
       } catch (err: any) {
@@ -329,3 +329,4 @@ export default function InviteGeneratorPage() {
     </div>
   );
 }
+

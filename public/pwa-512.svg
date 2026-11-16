@@ -18,8 +18,9 @@
     <path d="M32 0L12 28h10l-14 24h18v16h8V52h18L38 28h10z"/>
   </g>
   
-  <!-- KKC Text -->
-  <text x="256" y="380" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="74" font-weight="bold" fill="url(#gold512)" letter-spacing="10">KKC</text>
+  <!-- KKKC Text -->
+  <text x="256" y="380" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="74" font-weight="bold" fill="url(#gold512)" letter-spacing="10">KKKC</text>
   <text x="256" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#fcd34d" letter-spacing="8" opacity="0.85">FAMILY HERITAGE</text>
 </svg>
+
 

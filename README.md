@@ -1,4 +1,4 @@
-# KKC Family Website & Archive 🌳
+# KKKC Family Website & Archive 🌳
 
 A premium, elegant, and responsive family portal built with **React**, **TypeScript**, **Tailwind CSS v4**, and **Supabase**.
 
@@ -63,7 +63,7 @@ Open your browser at `http://localhost:5173`.
 ### 🔑 Signing into the Admin Area
 - Navigate to: `http://localhost:5173/admin/login`
 - In Local Mode, click the **"Click to pre-fill test admin credentials"** button or use:
-  - **Email**: `admin@kkc-family.com`
+  - **Email**: `admin@KKKC-family.com`
   - **Password**: `admin123`
 
 ---
@@ -105,3 +105,4 @@ The founders photograph provided by the user is saved at:
 public/uploads/founders.jpg
 ```
 It is automatically displayed on the homepage hero, the founders preview cards, and the setup wizard.
+
