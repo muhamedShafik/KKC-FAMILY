@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Filter, Users } from 'lucide-react';
 import { usePublishedMembers, usePrefetchMember } from '@/hooks/useFamily';
 import { Avatar, Badge, EmptyState, SectionHeader, Skeleton, Input, Select } from '@/components/ui';
-import { calcAge, formatDate, generationLabel } from '@/lib/utils';
+import { calcAge, formatDate } from '@/lib/utils';
 import type { FamilyMember } from '@/types';
 import { motion } from 'framer-motion';
 
@@ -36,7 +36,6 @@ function MemberCard({ member, onHover }: { member: FamilyMember; onHover?: (id: 
           </div>
           <div className="flex flex-wrap gap-1.5 mt-1.5">
             {member.branch && <Badge variant="amber">{member.branch}</Badge>}
-            {member.generation && <Badge variant="stone">Gen {member.generation}</Badge>}
           </div>
           <div className="flex items-center gap-3 mt-2 text-xs text-stone-400">
             {member.dob && <span>{formatDate(member.dob, 'dd MMM yyyy')}</span>}

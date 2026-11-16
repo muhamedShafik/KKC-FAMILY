@@ -77,9 +77,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="mb-4"
             >
-              <p className="text-amber-300/90 text-sm sm:text-base font-semibold tracking-wide font-['Manjari','Noto_Sans_Malayalam',sans-serif] drop-shadow-[0_2px_8px_rgba(200,135,31,0.3)]">
-                കാരക്കുന്നമ്മൽ കലന്തൻകുഞ്ഞി കുടുംബ കൂട്ടായ്മ
-              </p>
+             
             </motion.div>
 
             {/* Medallion: Founders Portrait with Glowing Golden Aura */}
@@ -112,6 +110,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
                   Estd. 2007
                 </span>
               </div>
+              
             </motion.div>
 
             {/* Title: KKKC in Royal Serif with Shimmer */}
@@ -121,6 +120,7 @@ export default function PremiumSplash({ onComplete }: { onComplete?: () => void 
               transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="mb-1"
             >
+              
               <h1 className="font-serif text-5xl sm:text-6xl font-bold tracking-wider bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_16px_rgba(200,135,31,0.4)]">
                 K K K C
               </h1>

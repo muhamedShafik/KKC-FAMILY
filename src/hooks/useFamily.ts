@@ -29,7 +29,7 @@ export function usePublishedMembers() {
   });
 }
 
-// ── Instant Founders Query (Lightweight Generation 1) ───────────
+// ── Instant Founders Query (Lightweight — earliest published members) ────────
 export function useFounders() {
   return useQuery<FamilyMember[]>({
     queryKey: ['founders'],
@@ -41,19 +41,18 @@ export function useFounders() {
           const parsed = JSON.parse(raw) as FamilyMember[];
           if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
-        // Fallback: check published members cache
+        // Fallback: take the first few published members (oldest)
         const pubRaw = localStorage.getItem('kkc_published_members_cache_v2');
         if (pubRaw) {
           const pub = JSON.parse(pubRaw) as FamilyMember[];
-          const gen1 = pub.filter(m => (m.generation ?? 1) === 1);
-          if (gen1.length > 0) return gen1;
+          if (pub.length > 0) return pub.slice(0, 4);
         }
         // Fallback: check storage members
         const memRaw = localStorage.getItem('kkc_members_v1');
         if (memRaw) {
           const mem = JSON.parse(memRaw) as FamilyMember[];
-          const gen1 = mem.filter(m => (m.generation ?? 1) === 1);
-          if (gen1.length > 0) return gen1;
+          const published = mem.filter(m => m.status === 'published');
+          if (published.length > 0) return published.slice(0, 4);
         }
       } catch {}
       return undefined;

@@ -98,7 +98,7 @@ export function invalidateMemberLocalCaches(
       localStorage.setItem('kkc_published_members_cache_v2', JSON.stringify(pubList));
     }
 
-    // 2. Founders cache (generation 1 published members)
+    // 2. Founders cache (first published members, oldest first)
     const rawFounders = localStorage.getItem('kkc_founders_cache_v2');
     if (rawFounders) {
       let foundersList: FamilyMember[] = JSON.parse(rawFounders);
@@ -107,13 +107,9 @@ export function invalidateMemberLocalCaches(
       }
       if (updatedMember) {
         const idx = foundersList.findIndex(m => m.id === updatedMember.id);
-        const isFounder = updatedMember.status === 'published' && (updatedMember.generation ?? 1) === 1;
+        const isFounder = updatedMember.status === 'published' && idx >= 0;
         if (isFounder) {
-          if (idx >= 0) {
-            foundersList[idx] = { ...foundersList[idx], ...updatedMember } as FamilyMember;
-          } else {
-            foundersList.push(updatedMember as FamilyMember);
-          }
+          foundersList[idx] = { ...foundersList[idx], ...updatedMember } as FamilyMember;
         } else if (idx >= 0) {
           foundersList.splice(idx, 1);
         }
@@ -177,15 +173,15 @@ export function clearRelationsLocalCache(idA?: string, idB?: string): void {
 // Members
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Generation-1 founders only (fast query) */
+/** Earliest published members (founders — oldest by created_at) */
 export async function fetchFounders(): Promise<FamilyMember[]> {
-  if (!isSupabaseConfigured) return getLocalMembers().filter(m => (m.generation ?? 1) === 1);
+  if (!isSupabaseConfigured) return getLocalMembers().filter(m => m.status === 'published').slice(0, 4);
   const { data, error } = await supabase
     .from('family_members')
     .select('*')
-    .eq('generation', 1)
     .eq('status', 'published')
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true })
+    .limit(4);
   if (error) throw error;
   const members = data as FamilyMember[];
   if (members.length) {
@@ -201,7 +197,7 @@ export async function fetchPublishedMembers(): Promise<FamilyMember[]> {
     .from('family_members')
     .select('*')
     .eq('status', 'published')
-    .order('generation', { ascending: true });
+    .order('created_at', { ascending: true });
   if (error) throw error;
   const members = data as FamilyMember[];
   try { localStorage.setItem('kkc_published_members_cache_v2', JSON.stringify(members)); } catch {}
@@ -214,7 +210,7 @@ export async function fetchAllMembers(): Promise<FamilyMember[]> {
   const { data, error } = await supabase
     .from('family_members')
     .select('*')
-    .order('generation', { ascending: true });
+    .order('created_at', { ascending: true });
   if (error) throw error;
   return data as FamilyMember[];
 }
@@ -324,7 +320,6 @@ export async function upsertMember(
       occupation: memberPayload.occupation ?? null,
       hometown: memberPayload.hometown ?? null,
       branch: memberPayload.branch ?? null,
-      generation: memberPayload.generation ?? 1,
       status: memberPayload.status ?? 'draft',
       profile_photo_url: memberPayload.profile_photo_url ?? null,
       is_public: memberPayload.is_public ?? true,
@@ -432,12 +427,12 @@ export async function buildFamilyTree(rootId?: string): Promise<TreeNode | null>
   if (!members.length) return null;
 
   if (!isSupabaseConfigured) {
-    const root = rootId ? members.find(m => m.id === rootId) : members.find(m => (m.generation ?? 1) === 1);
+    const root = rootId ? members.find(m => m.id === rootId) : members.find(m => m.status === 'published') ?? members[0];
     if (!root) return null;
     const toNode = (m: FamilyMember): TreeNode => ({
       id: m.id, name: m.full_name, gender: m.gender,
       dob: m.dob, dod: m.dod, profile_photo_url: m.profile_photo_url,
-      generation: m.generation ?? 1, branch: m.branch,
+      branch: m.branch,
       spouses: [], children: [],
     });
     return toNode(root);
@@ -452,7 +447,7 @@ export async function buildFamilyTree(rootId?: string): Promise<TreeNode | null>
     if (visited.has(m.id)) return {
       id: m.id, name: m.full_name, gender: m.gender,
       dob: m.dob, dod: m.dod, profile_photo_url: m.profile_photo_url,
-      generation: m.generation ?? 1, branch: m.branch,
+      branch: m.branch,
       spouses: [], children: [],
     };
     visited.add(m.id);
@@ -468,13 +463,13 @@ export async function buildFamilyTree(rootId?: string): Promise<TreeNode | null>
     return {
       id: m.id, name: m.full_name, gender: m.gender,
       dob: m.dob, dod: m.dod, profile_photo_url: m.profile_photo_url,
-      generation: m.generation ?? 1, branch: m.branch,
+      branch: m.branch,
       spouses: spouseIds.map(id => memberMap.get(id)).filter(Boolean).map(s => toNode(s!, new Set(visited))),
       children: childIds.map(id => memberMap.get(id)).filter(Boolean).map(c => toNode(c!, new Set(visited))),
     };
   };
 
-  const root = rootId ? memberMap.get(rootId) : members.find(m => (m.generation ?? 1) === 1);
+  const root = rootId ? memberMap.get(rootId) : members.find(m => m.status === 'published') ?? members[0];
   if (!root) return null;
 
   const tree = toNode(root);
@@ -581,7 +576,6 @@ export async function setupFounders(data: FoundersSetupPayload): Promise<{ head:
     hometown: data.headHometown,
     bio: data.headBio,
     profile_photo_url: data.headPhotoUrl || '/uploads/founders.jpg',
-    generation: 1,
     branch: data.branchName || 'Founding Roots',
     status: 'published',
     is_public: true,
@@ -599,7 +593,6 @@ export async function setupFounders(data: FoundersSetupPayload): Promise<{ head:
       hometown: data.partnerHometown,
       bio: data.partnerBio,
       profile_photo_url: data.partnerPhotoUrl || '/uploads/founders.jpg',
-      generation: 1,
       branch: data.branchName || 'Founding Roots',
       status: 'published',
       is_public: true,

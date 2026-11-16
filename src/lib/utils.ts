@@ -55,14 +55,6 @@ export function truncate(str: string, max: number): string {
   return str.slice(0, max).trimEnd() + '…';
 }
 
-// ── Generation label ──────────────────────────────────────────
-const ORDINALS = ['', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
-export function generationLabel(gen: number | null): string {
-  if (!gen) return 'Unknown';
-  if (gen <= 8) return `${ORDINALS[gen]} Generation`;
-  return `${gen}th Generation`;
-}
-
 // ── Build Supabase public URL ─────────────────────────────────
 export function storageUrl(bucket: string, path: string): string {
   const base = import.meta.env.VITE_SUPABASE_URL;

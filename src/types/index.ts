@@ -18,7 +18,6 @@ export interface FamilyMember {
   occupation: string | null;
   hometown: string | null;
   branch: string | null;        // family branch label
-  generation: number | null;    // 1 = founders
   status: MemberStatus;
   profile_photo_url: string | null;
   is_public: boolean;
@@ -95,7 +94,6 @@ export interface TreeNode {
   dob: string | null;
   dod: string | null;
   profile_photo_url: string | null;
-  generation: number;
   branch: string | null;
   spouses: TreeNode[];
   children: TreeNode[];

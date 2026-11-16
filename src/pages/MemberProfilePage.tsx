@@ -3,7 +3,7 @@ import { ArrowLeft, MapPin, Briefcase, Calendar, Heart, Users, Star, Book, Lock,
 import { useMemberWithRelations, usePrefetchMember } from '@/hooks/useFamily';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, Badge, Button, Skeleton } from '@/components/ui';
-import { calcAge, formatDate, generationLabel } from '@/lib/utils';
+import { calcAge, formatDate } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 function InfoBlock({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
@@ -95,7 +95,6 @@ export default function MemberProfilePage() {
           <div className="text-center md:text-left text-white">
             <div className="flex flex-wrap items-center gap-2 mb-1 justify-center md:justify-start">
               {member.branch && <Badge variant="amber" className="bg-amber-500/30 text-amber-200 border-0">{member.branch}</Badge>}
-              {member.generation && <Badge variant="stone" className="bg-white/10 text-white border-0">{generationLabel(member.generation)}</Badge>}
               {isDeceased && <Badge variant="stone" className="bg-white/10 text-white border-0">Passed Away</Badge>}
             </div>
             <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">{member.full_name}</h1>
@@ -137,7 +136,6 @@ export default function MemberProfilePage() {
               {member.occupation && <InfoBlock icon={Briefcase} label="Occupation" value={member.occupation} />}
               {member.hometown && <InfoBlock icon={MapPin} label="Hometown" value={member.hometown} />}
               {member.gender && <InfoBlock icon={Star} label="Gender" value={member.gender.charAt(0).toUpperCase() + member.gender.slice(1)} />}
-              {member.generation && <InfoBlock icon={Users} label="Generation" value={generationLabel(member.generation)} />}
             </div>
           </div>
 
