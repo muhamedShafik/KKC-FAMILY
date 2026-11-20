@@ -58,10 +58,10 @@ export default function MembersPage() {
   const [genFilter, setGenFilter] = useState('');
   const [branchFilter, setBranchFilter] = useState('');
 
-  const generations = useMemo(() => {
-    const gens = [...new Set(members.map(m => m.generation).filter(Boolean))].sort() as number[];
-    return gens.map(g => ({ value: String(g), label: generationLabel(g) }));
-  }, [members]);
+  // const generations = useMemo(() => {
+  //   const gens = [...new Set(members.map(m => m.generation).filter(Boolean))].sort() as number[];
+  //   return gens.map(g => ({ value: String(g), label: generationLabel(g) }));
+  // }, [members]);
 
   const branches = useMemo(() => {
     const br = [...new Set(members.map(m => m.branch).filter(Boolean))] as string[];
@@ -73,9 +73,9 @@ export default function MembersPage() {
       const matchSearch = !search || m.full_name.toLowerCase().includes(search.toLowerCase())
         || m.occupation?.toLowerCase().includes(search.toLowerCase())
         || m.hometown?.toLowerCase().includes(search.toLowerCase());
-      const matchGen = !genFilter || String(m.generation) === genFilter;
+      // const matchGen = !genFilter || String(m.generation) === genFilter;
       const matchBranch = !branchFilter || m.branch === branchFilter;
-      return matchSearch && matchGen && matchBranch;
+      return matchSearch && matchBranch;
     });
   }, [members, search, genFilter, branchFilter]);
 
@@ -97,13 +97,13 @@ export default function MembersPage() {
             className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 bg-white text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent placeholder:text-stone-400"
           />
         </div>
-        <Select
+        {/* <Select
           options={generations}
           value={genFilter}
           onChange={e => setGenFilter(e.target.value)}
           placeholder="All Generations"
           className="sm:w-44"
-        />
+        /> */}
         <Select
           options={branches}
           value={branchFilter}

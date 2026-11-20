@@ -226,7 +226,7 @@ export default function AdminMemberForm() {
     status: 'published',
     is_public: true,
     gender: 'male',
-    generation: 1,
+    // generation: 1,
     phone: null,
   });
 
@@ -276,7 +276,7 @@ export default function AdminMemberForm() {
         ...formData,
         full_name: formData.full_name!.trim(),
         status: formData.status || 'published',
-        generation: formData.generation ?? 1,
+        // generation: formData.generation ?? 1,
       });
       setSavedId(saved.id);
       setFormData(saved);
@@ -463,7 +463,7 @@ export default function AdminMemberForm() {
               ['Date of Death', formData.dod],
               ['Occupation', formData.occupation],
               ['Hometown', formData.hometown],
-              ['Generation', formData.generation ? `Gen ${formData.generation}` : null],
+              // ['Generation', formData.generation ? `Gen ${formData.generation}` : null],
               ['Branch', formData.branch],
               ['Phone', formData.phone],
             ].map(([label, value]) =>

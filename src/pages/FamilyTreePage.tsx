@@ -250,10 +250,10 @@ function ProfilePanel({ node, onClose }: { node: TreeNode; onClose: () => void }
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-stone-600">
+        {/* <div className="flex items-center gap-2 text-sm text-stone-600">
           <span className="font-medium">Generation:</span>
           <Badge variant="stone">Gen {node.generation}</Badge>
-        </div>
+        </div> */}
 
         {node.spouses.length > 0 && (
           <div>
@@ -323,11 +323,11 @@ export default function FamilyTreePage() {
   }, [tree]);
 
   // Tree stats calculation
-  const stats = useMemo(() => {
-    if (!allTreeMembers.length) return { count: 0, maxGen: 1 };
-    const maxGen = Math.max(...allTreeMembers.map(m => m.generation ?? 1));
-    return { count: allTreeMembers.length, maxGen };
-  }, [allTreeMembers]);
+  // const stats = useMemo(() => {
+  //   if (!allTreeMembers.length) return { count: 0, maxGen: 1 };
+  //   const maxGen = Math.max(...allTreeMembers.map(m => m.generation ?? 1));
+  //   return { count: allTreeMembers.length, maxGen };
+  // }, [allTreeMembers]);
 
   // Filtered members for search
   const searchResults = useMemo(() => {
@@ -348,7 +348,7 @@ export default function FamilyTreePage() {
     setSelected(node);
     prefetchMember(node.id);
     // Expand tree to show this node
-    setGlobalExpandDepth(Math.max(globalExpandDepth, (node.generation ?? 1) + 1));
+    // setGlobalExpandDepth(Math.max(globalExpandDepth, (node.generation ?? 1) + 1));
   };
 
   return (
@@ -375,9 +375,9 @@ export default function FamilyTreePage() {
                 </div>
                 <div>
                   <p className="text-xs text-stone-400 uppercase font-semibold">Total Tree</p>
-                  <p className="text-sm font-bold text-stone-900">
+                  {/* <p className="text-sm font-bold text-stone-900">
                     {stats.count.toLocaleString()} Members · Gen 1 to {stats.maxGen}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -408,9 +408,9 @@ export default function FamilyTreePage() {
                     <Avatar name={m.name} src={m.profile_photo_url} size="xs" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-stone-900 truncate">{m.name}</p>
-                      <p className="text-[10px] text-stone-400">
+                      {/* <p className="text-[10px] text-stone-400">
                         Gen {m.generation || 1} {m.branch ? `· ${m.branch}` : ''}
-                      </p>
+                      </p> */}
                     </div>
                   </button>
                 ))}

@@ -161,7 +161,7 @@ export default function AdminDashboard() {
                 <Avatar name={m.full_name} src={m.profile_photo_url} size="sm" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-stone-900 truncate">{m.full_name}</p>
-                  <p className="text-xs text-stone-400">{m.branch ?? 'No branch'} · Gen {m.generation ?? '?'}</p>
+                  {/* <p className="text-xs text-stone-400">{m.branch ?? 'No branch'} · Gen {m.generation ?? '?'}</p> */}
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                   m.status === 'published' ? 'bg-green-100 text-green-700'

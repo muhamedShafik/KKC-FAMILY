@@ -45,43 +45,43 @@ export default function AdminFoundersSetup() {
   const [branchName, setBranchName] = useState('KKKC Ancestral Lineage');
 
   // Pre-load existing founders if already in database
-  useEffect(() => {
-    const gen1 = allMembers.filter(m => (m.generation ?? 1) === 1);
-    if (gen1.length > 0) {
-      const existingHead = gen1.find(m => m.gender === 'male') || gen1[0];
-      const existingPartner = gen1.find(m => m.id !== existingHead.id);
+  // useEffect(() => {
+  //   const gen1 = allMembers.filter(m => (m.generation ?? 1) === 1);
+  //   if (gen1.length > 0) {
+  //     const existingHead = gen1.find(m => m.gender === 'male') || gen1[0];
+  //     const existingPartner = gen1.find(m => m.id !== existingHead.id);
 
-      if (existingHead) {
-        setHeadId(existingHead.id);
-        setHeadName(existingHead.full_name || '');
-        setHeadGender(existingHead.gender || 'male');
-        setHeadDob(existingHead.dob || '');
-        setHeadDod(existingHead.dod || '');
-        setHeadOccupation(existingHead.occupation || '');
-        setHeadHometown(existingHead.hometown || '');
-        setHeadBio(existingHead.bio || '');
-        if (existingHead.profile_photo_url) {
-          setHeadPhotoUrl(existingHead.profile_photo_url);
-          setArchivalPhotoUrl(existingHead.profile_photo_url);
-        }
-        if (existingHead.branch) setBranchName(existingHead.branch);
-      }
+  //     if (existingHead) {
+  //       setHeadId(existingHead.id);
+  //       setHeadName(existingHead.full_name || '');
+  //       setHeadGender(existingHead.gender || 'male');
+  //       setHeadDob(existingHead.dob || '');
+  //       setHeadDod(existingHead.dod || '');
+  //       setHeadOccupation(existingHead.occupation || '');
+  //       setHeadHometown(existingHead.hometown || '');
+  //       setHeadBio(existingHead.bio || '');
+  //       if (existingHead.profile_photo_url) {
+  //         setHeadPhotoUrl(existingHead.profile_photo_url);
+  //         setArchivalPhotoUrl(existingHead.profile_photo_url);
+  //       }
+  //       if (existingHead.branch) setBranchName(existingHead.branch);
+  //     }
 
-      if (existingPartner) {
-        setPartnerId(existingPartner.id);
-        setPartnerName(existingPartner.full_name || '');
-        setPartnerGender(existingPartner.gender || 'female');
-        setPartnerDob(existingPartner.dob || '');
-        setPartnerDod(existingPartner.dod || '');
-        setPartnerOccupation(existingPartner.occupation || '');
-        setPartnerHometown(existingPartner.hometown || '');
-        setPartnerBio(existingPartner.bio || '');
-        if (existingPartner.profile_photo_url) {
-          setPartnerPhotoUrl(existingPartner.profile_photo_url);
-        }
-      }
-    }
-  }, [allMembers]);
+  //     if (existingPartner) {
+  //       setPartnerId(existingPartner.id);
+  //       setPartnerName(existingPartner.full_name || '');
+  //       setPartnerGender(existingPartner.gender || 'female');
+  //       setPartnerDob(existingPartner.dob || '');
+  //       setPartnerDod(existingPartner.dod || '');
+  //       setPartnerOccupation(existingPartner.occupation || '');
+  //       setPartnerHometown(existingPartner.hometown || '');
+  //       setPartnerBio(existingPartner.bio || '');
+  //       if (existingPartner.profile_photo_url) {
+  //         setPartnerPhotoUrl(existingPartner.profile_photo_url);
+  //       }
+  //     }
+  //   }
+  // }, [allMembers]);
 
   // Upload handler for Archival Group Portrait
   const onDropArchival = useCallback(async (files: File[]) => {

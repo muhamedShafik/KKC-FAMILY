@@ -138,7 +138,7 @@ export default function AdminMembersPage() {
                   </td>
                   <td className="p-4 hidden sm:table-cell">
                     <p className="text-sm text-stone-700">{m.branch ?? '—'}</p>
-                    <p className="text-xs text-stone-400">Gen {m.generation ?? '?'}</p>
+                    {/* <p className="text-xs text-stone-400">Gen {m.generation ?? '?'}</p> */}
                   </td>
                   <td className="p-4 hidden md:table-cell text-sm text-stone-600">
                     {formatDate(m.dob)}

@@ -27,16 +27,13 @@ export default function HomePage() {
   const { data: foundersData = [], isLoading: isFoundersLoading } = useFounders();
   const prefetchMember = usePrefetchMember();
 
-  const founders = foundersData.length > 0 ? foundersData : members.filter(m => (m.generation ?? 1) === 1);
+  const founders = foundersData.length > 0 ? foundersData : members.slice(0, 2);
   const founderHead = founders[0];
   const founderPartner = founders[1];
   const recentMembers = members.slice(0, 6);
 
   const cachedStats = getCachedFamilyStats();
   const totalMembers = members.length > 0 ? members.length : (cachedStats?.totalMembers ?? (founders.length > 0 ? founders.length : 0));
-  const totalGenerations = members.length > 0
-    ? Math.max(...members.map(m => m.generation ?? 1))
-    : (cachedStats?.totalGenerations ?? (founders.length > 0 ? 1 : 0));
   const totalBranches = members.length > 0
     ? (new Set(members.map(m => m.branch).filter(Boolean)).size || 1)
     : (cachedStats?.totalBranches ?? (founders.length > 0 ? 1 : 0));
@@ -61,7 +58,7 @@ export default function HomePage() {
                 variants={fadeUp} initial="hidden" animate="show" custom={0}
                 className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 px-4 py-1.5 rounded-full text-sm font-medium mb-6 border border-amber-500/30"
               >
-                <Star className="w-3.5 h-3.5" /> Family Heritage Since Generations
+                <Star className="w-3.5 h-3.5" /> Our Family Heritage
               </motion.div>
 
               <motion.h1
@@ -77,7 +74,7 @@ export default function HomePage() {
                 variants={fadeUp} initial="hidden" animate="show" custom={2}
                 className="text-stone-300 text-lg md:text-xl max-w-lg mb-8 leading-relaxed"
               >
-                Explore our family roots, discover stories of those who came before us, and celebrate the living legacy of the KKKC family across generations.
+                Explore our family roots, discover stories of those who came before us, and celebrate the living legacy of the KKKC family.
               </motion.p>
 
               <motion.div
@@ -134,20 +131,16 @@ export default function HomePage() {
                       {founderPartner && (
                         <p className="text-stone-300 text-sm">& {founderPartner.full_name}</p>
                       )}
-                      <p className="text-amber-400 text-xs mt-0.5">Generation 1 · Roots of KKKC</p>
+                      <p className="text-amber-400 text-xs mt-0.5">Roots of KKKC</p>
                     </div>
                   </div>
 
                   <div className="h-px bg-white/20 mb-4" />
 
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers}</p>
                       <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalGenerations}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Generations</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">{totalBranches}</p>
@@ -177,14 +170,10 @@ export default function HomePage() {
 
                   <div className="h-px bg-white/20 mb-4" />
 
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers || '—'}</p>
                       <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalGenerations || '—'}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Generations</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">{totalBranches || '—'}</p>
@@ -211,14 +200,10 @@ export default function HomePage() {
 
                   <div className="h-px bg-white/20 mb-4" />
 
-                  <div className="grid grid-cols-3 gap-4 text-center mb-6">
+                  <div className="grid grid-cols-2 gap-4 text-center mb-6">
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">0</p>
                       <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">0</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Generations</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-amber-400 font-serif">0</p>
@@ -279,7 +264,7 @@ export default function HomePage() {
             </h2>
             <div className="space-y-4 text-stone-600 leading-relaxed">
               <p>
-                Welcome to the official KKKC Family website — a living archive dedicated to celebrating our family's roots, honoring those who came before us, and connecting generations to come.
+                Welcome to the official KKKC Family website — a living archive dedicated to celebrating our family's roots, honoring those who came before us, and bringing family members together.
               </p>
               <p>
                 This website is currently being set up. Family administrators can sign in to add founding members, build out the family tree, and begin adding our rich family history.
@@ -321,7 +306,7 @@ export default function HomePage() {
                     ? founderHead.full_name
                     : 'KKKC Family Founders'}
                 </p>
-                <p className="text-amber-300 text-sm mt-1">First Generation · The Beginning of Our Story</p>
+                <p className="text-amber-300 text-sm mt-1">The Beginning of Our Story</p>
               </div>
             </div>
             {/* Decorative elements */}
@@ -388,7 +373,7 @@ export default function HomePage() {
           {[
             {
               icon: TreePine, title: 'Interactive Family Tree',
-              desc: 'Navigate through generations with our interactive tree. Expand branches, select members, and see how everyone is connected.',
+              desc: 'Explore our family tree. Expand branches, select members, and see how everyone is connected.',
               color: 'bg-amber-50 text-amber-600',
             },
             {
