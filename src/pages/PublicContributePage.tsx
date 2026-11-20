@@ -158,7 +158,7 @@ function AddMemberForm({ onSuccess }: { onSuccess: () => void }) {
         profile_photo_url: photoUrl || null,
         status: 'draft',
         is_public: false,
-        generation: 1,
+        
         dod: null,
         private_notes: null,
         email: null,
