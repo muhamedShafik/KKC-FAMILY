@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TreePine, Users, BookOpen, Image, ChevronRight, Sprout, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { usePublishedMembers, useFounders, usePrefetchMember } from '@/hooks/useFamily';
 import { getCachedFamilyStats } from '@/lib/queries';
 import { Button, Avatar, Skeleton } from '@/components/ui';
@@ -17,6 +17,17 @@ function LeafDivider() {
   );
 }
 
+
+const ease = [0.22, 1, 0.36, 1] as const
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.35 } },
+}
+const item = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
+}
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.1 } }),
@@ -31,6 +42,8 @@ export default function HomePage() {
   const founderHead = founders[0];
   const founderPartner = founders[1];
   const recentMembers = members.slice(0, 6);
+
+  const reduce = useReducedMotion()
 
   const cachedStats = getCachedFamilyStats();
   const totalMembers = members.length > 0 ? members.length : (cachedStats?.totalMembers ?? (founders.length > 0 ? founders.length : 0));
@@ -97,126 +110,202 @@ export default function HomePage() {
               </motion.div>
             </div>
 
-            {/* Founder card */}
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="show" custom={2}
-              className="glass-card rounded-3xl p-8 bg-white/10 border-white/20 backdrop-blur-md"
+
+     {/* Founder card */}
+<motion.div variants={fadeUp} initial="hidden" animate="show" custom={2}>
+  <motion.div
+    animate={reduce ? undefined : { y: [0, -6, 0] }}
+    transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+    className="group relative rounded-3xl shadow-[0_25px_70px_-20px_rgba(0,0,0,0.8)]"
+  >
+    {/* inner dark card */}
+    <div className="relative rounded-3xl p-8 overflow-hidden bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950">
+
+      {/* breathing glow */}
+      <motion.div
+        className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-amber-500/20 blur-3xl"
+        animate={reduce ? undefined : { opacity: [0.4, 0.9, 0.4], scale: [1, 1.15, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      <motion.div variants={stagger} initial="hidden" animate="show" className="relative">
+        {founders.length > 0 ? (
+          <>
+            <motion.p
+              variants={item}
+              className="text-amber-400 text-[11px] font-semibold uppercase tracking-[0.3em] mb-5"
             >
-              {founders.length > 0 ? (
-                <>
-                  <p className="text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
-                    Family Founders
+              Family Founders
+            </motion.p>
+
+            <motion.div variants={item} className="flex items-center gap-5 mb-6">
+              <div className="flex -space-x-4">
+                <motion.div
+                  whileHover={{ scale: 1.08, zIndex: 10 }}
+                  transition={{ duration: 0.4, ease }}
+                  className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 ring-4 ring-stone-900 bg-stone-700 shadow-lg"
+                >
+                  <img
+                    src={founderHead?.profile_photo_url || '/uploads/founders.jpg'}
+                    alt={founderHead?.full_name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </motion.div>
+                {founderPartner && (
+                  <motion.div
+                    whileHover={{ scale: 1.08, zIndex: 10 }}
+                    transition={{ duration: 0.4, ease }}
+                    className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-300 ring-4 ring-stone-900 bg-stone-700 shadow-lg"
+                  >
+                    <img
+                      src={founderPartner.profile_photo_url || '/uploads/founders.jpg'}
+                      alt={founderPartner.full_name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </motion.div>
+                )}
+              </div>
+
+              <div>
+                <p className="text-white font-serif text-xl font-bold tracking-wide leading-tight">
+                  {founderHead?.full_name}
+                </p>
+                {founderPartner && (
+                  <p className="font-serif italic text-stone-200 text-base mt-0.5">
+                    <span className="text-amber-400 not-italic">&</span> {founderPartner.full_name}
                   </p>
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="flex -space-x-3">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 ring-2 ring-stone-800 bg-stone-700">
-                        <img
-                          src={founderHead?.profile_photo_url || '/uploads/founders.jpg'}
-                          alt={founderHead.full_name}
-                          className="w-full h-full object-cover object-top"
-                        />
-                      </div>
-                      {founderPartner && (
-                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-300 ring-2 ring-stone-800 bg-stone-700">
-                          <img
-                            src={founderPartner.profile_photo_url || '/uploads/founders.jpg'}
-                            alt={founderPartner.full_name}
-                            className="w-full h-full object-cover object-top"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-white font-serif text-lg font-semibold">{founderHead.full_name}</p>
-                      {founderPartner && (
-                        <p className="text-stone-300 text-sm">& {founderPartner.full_name}</p>
-                      )}
-                      <p className="text-amber-400 text-xs mt-0.5">Roots of KKKC</p>
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/20 mb-4" />
-
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalBranches}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Branches</p>
-                    </div>
-                  </div>
-
-                  <Link to="/tree" className="mt-6 flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-sm font-medium transition-colors border border-amber-500/30">
-                    View Family Tree <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </>
-              ) : isFoundersLoading ? (
-                <>
-                  <p className="text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
-                    Family Founders
-                  </p>
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="flex -space-x-3">
-                      <div className="w-16 h-16 rounded-full bg-white/20 animate-pulse border-2 border-amber-400/50" />
-                      <div className="w-16 h-16 rounded-full bg-white/10 animate-pulse border-2 border-amber-300/30" />
-                    </div>
-                    <div className="space-y-2 flex-1">
-                      <div className="h-5 w-44 bg-white/20 rounded animate-pulse" />
-                      <div className="h-3.5 w-32 bg-amber-400/30 rounded animate-pulse" />
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/20 mb-4" />
-
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalMembers || '—'}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">{totalBranches || '—'}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Branches</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 h-11 rounded-xl bg-white/10 animate-pulse" />
-                </>
-              ) : (
-                <>
-                  <p className="text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
-                    Family Heritage
-                  </p>
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border-2 border-dashed border-amber-400 flex items-center justify-center text-amber-300 flex-shrink-0">
-                      <TreePine className="w-7 h-7" />
-                    </div>
-                    <div>
-                      <p className="text-white font-serif text-lg font-semibold">Ready to Begin</p>
-                      <p className="text-stone-300 text-xs mt-0.5">Add First Family Head & Partner to start</p>
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/20 mb-4" />
-
-                  <div className="grid grid-cols-2 gap-4 text-center mb-6">
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">0</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Members</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-amber-400 font-serif">0</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Branches</p>
-                    </div>
-                  </div>
-
-                  <Link to="/admin/setup-founders" className="flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition-colors shadow-lg">
-                    Admin: Add First Family Head & Partner <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </>
-              )}
+                )}
+                <p className="text-amber-400 text-xs font-medium tracking-wider uppercase mt-1.5">
+                  Roots of KKKC
+                </p>
+              </div>
             </motion.div>
+
+            <motion.div
+              variants={{
+                hidden: { scaleX: 0, opacity: 0 },
+                show: { scaleX: 1, opacity: 1, transition: { duration: 1, ease } },
+              }}
+              className="h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent mb-6 origin-center"
+            />
+
+            <motion.div variants={item} className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">{totalMembers}</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Members</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">{totalBranches}</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Branches</p>
+              </div>
+            </motion.div>
+
+            <motion.div variants={item}>
+              <Link
+                to="/tree"
+                className="relative overflow-hidden mt-7 flex items-center justify-center gap-2 py-3.5 rounded-xl
+                           bg-amber-500 hover:bg-amber-400 text-stone-900 text-sm font-semibold
+                           shadow-lg shadow-amber-900/40 transition-colors"
+              >
+                {!reduce && (
+                  <motion.span
+                    className="pointer-events-none absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12"
+                    initial={{ x: '-150%' }}
+                    animate={{ x: '450%' }}
+                    transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
+                  />
+                )}
+                <span className="relative flex items-center gap-2">
+                  View Family Tree
+                  <ChevronRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </motion.div>
+          </>
+        ) : isFoundersLoading ? (
+          <>
+            <p className="text-amber-400 text-[11px] font-semibold uppercase tracking-[0.3em] mb-5">
+              Family Founders
+            </p>
+            <div className="flex items-center gap-5 mb-6">
+              <div className="flex -space-x-4">
+                <div className="w-16 h-16 rounded-full bg-white/15 animate-pulse border-2 border-amber-400/50" />
+                <div className="w-16 h-16 rounded-full bg-white/10 animate-pulse border-2 border-amber-300/30" />
+              </div>
+              <div className="space-y-2 flex-1">
+                <div className="h-5 w-44 bg-white/15 rounded animate-pulse" />
+                <div className="h-3.5 w-32 bg-amber-400/25 rounded animate-pulse" />
+              </div>
+            </div>
+
+            <div className="h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent mb-6" />
+
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">{totalMembers || '—'}</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Members</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">{totalBranches || '—'}</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Branches</p>
+              </div>
+            </div>
+
+            <div className="mt-7 h-12 rounded-xl bg-white/10 animate-pulse" />
+          </>
+        ) : (
+          <>
+            <motion.p
+              variants={item}
+              className="text-amber-400 text-[11px] font-semibold uppercase tracking-[0.3em] mb-5"
+            >
+              Family Heritage
+            </motion.p>
+
+            <motion.div variants={item} className="flex items-center gap-4 mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border-2 border-dashed border-amber-400/70 flex items-center justify-center text-amber-300 flex-shrink-0">
+                <TreePine className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-white font-serif text-xl font-bold">Ready to Begin</p>
+                <p className="text-stone-300 text-xs mt-1">Add First Family Head & Partner to start</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              variants={item}
+              className="h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent mb-6"
+            />
+
+            <motion.div variants={item} className="grid grid-cols-2 gap-4 text-center mb-7">
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">0</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Members</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-amber-400 font-serif">0</p>
+                <p className="text-[11px] text-stone-300 uppercase tracking-widest mt-1">Branches</p>
+              </div>
+            </motion.div>
+
+            <motion.div variants={item}>
+              <Link
+                to="/admin/setup-founders"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-900 text-sm font-semibold transition-colors shadow-lg shadow-amber-900/40"
+              >
+                Admin: Add First Family Head & Partner <ChevronRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          </>
+        )}
+      </motion.div>
+    </div>
+
+    {/* smooth animated outline, drawn on top */}
+    <span className="card-outline" />
+  </motion.div>
+</motion.div>
+
           </div>
         </div>
 

@@ -65,6 +65,42 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.25;
 }
 
+
+/* FOUNDER CARD CSS */
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-angle {
+  to { --angle: 360deg; }
+}
+
+.card-outline {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;          /* same as rounded-3xl */
+  padding: 1.5px;                 /* border thickness */
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--angle),
+    rgba(245, 158, 11, 0.18) 0%,
+    rgba(245, 158, 11, 0.18) 62%,
+    rgba(245, 158, 11, 0.95) 84%,
+    #fde68a 92%,
+    rgba(245, 158, 11, 0.18) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spin-angle 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-outline { animation: none; }
+}
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: var(--color-amber-50); }
