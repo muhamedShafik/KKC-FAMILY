@@ -13,4 +13,7 @@ export default defineConfig({
     },
   },
   envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
+   build: {
+    target: ['es2018', 'chrome80', 'safari13'],
+  },
 })
