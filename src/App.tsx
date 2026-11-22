@@ -18,6 +18,7 @@ const PublicContributePage = lazy(() => import('@/pages/PublicContributePage'));
 
 // Admin pages (lazy-loaded so regular visitors never download admin code)
 const AdminLoginPage = lazy(() => import('@/pages/admin/AdminLoginPage'));
+const AdminResetPasswordPage = lazy(() => import('@/pages/admin/AdminResetPasswordPage'));
 const AdminLayout = lazy(() => import('@/pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const AdminMembersPage = lazy(() => import('@/pages/admin/AdminMembersPage'));
@@ -70,6 +71,7 @@ function App() {
 
               {/* Admin auth */}
               <Route path="admin/login" element={<AdminLoginPage />} />
+              <Route path="admin/reset-password" element={<AdminResetPasswordPage />} />
 
               {/* Admin protected */}
               <Route path="admin" element={<AdminLayout />}>

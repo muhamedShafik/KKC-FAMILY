@@ -15,6 +15,8 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ data?: any; error: Error | null }>;
   signOut: () => Promise<void>;
+  resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
+  updatePassword: (password: string) => Promise<{ error: Error | null }>;
   isAdmin: boolean;
   isLocalMode: boolean;
 }
@@ -108,6 +110,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const resetPasswordForEmail = async (email: string) => {
+    if (isSupabaseConfigured) {
+      const redirectUrl = `${window.location.origin}/admin/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+      return { error: error as Error | null };
+    } else {
+      // Local mode simulation
+      if (!email) {
+        return { error: new Error('Please enter your email address') };
+      }
+      return { error: null };
+    }
+  };
+
+  const updatePassword = async (password: string) => {
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.auth.updateUser({ password });
+      return { error: error as Error | null };
+    } else {
+      // Local mode simulation
+      if (!password || password.length < 6) {
+        return { error: new Error('Password must be at least 6 characters long') };
+      }
+      return { error: null };
+    }
+  };
+
   const isAdmin = !!user;
 
   return (
@@ -119,6 +150,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
+        resetPasswordForEmail,
+        updatePassword,
         isAdmin,
         isLocalMode: !isSupabaseConfigured,
       }}
